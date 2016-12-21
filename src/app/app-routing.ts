@@ -2,7 +2,7 @@
 import {PageAComponent} from "./pagea/pagea.component";
 import {PageBComponent} from "./pageb/pageb.component";
 
-const router = [{
+export const AppRouting = [{
     url: '/pagea',
     name: 'pagea',
     component: PageAComponent
@@ -12,4 +12,11 @@ const router = [{
     component: PageBComponent
 }];
 
-export default router;
+export class DefaultRoutingConfig {
+    static $inject = ['$urlRouterProvider'];
+
+    constructor($urlRouterProvider: angular.ui.IUrlRouterProvider) {
+        $urlRouterProvider.when('', '/pagea');
+        $urlRouterProvider.otherwise('/pagea');
+    }
+}

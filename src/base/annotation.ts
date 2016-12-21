@@ -1,31 +1,59 @@
 // Created by baihuibo on 16/8/30.
 import {module, forEach} from "angular";
-import {IModule, InjectableOption} from "annotation";
+import {IModule, InjectableOption, IComponentOptions, IDirectiveOption} from "annotation";
 
 const uniqcomp = {};
-export function Component(option: angular.IComponentOptions): any {
+export function Component(option: IComponentOptions): any {
     return function (classes) {
-        const name = classes['componentName'] || 'comp' + nextId();
-        if (uniqcomp[name]) {
-            throw `请不要设置重复的组件名称(${name})`;
+        option.selector = option.selector || 'comp' + nextId();
+        if (uniqcomp[option.selector]) {
+            throw `请不要设置重复的 'selector' 名称(${option.selector})`;
         }
-        uniqcomp[name] = true;
+        uniqcomp[option.selector] = true;
         option.controller = classes;
-        classes['componentName'] = name;
-        classes['componentOption'] = option;
+        classes['$componentOption'] = option;
+    }
+}
+
+export function Directive(option: IDirectiveOption) {
+    return function (classes) {
+        if (option.selector) {
+            const first = option.selector[0];
+            if (first == '[') {// attr
+                option.selector = option.selector.slice(1, -1);
+                option.restrict = 'A';
+            } else if (first == '.') {// class
+                option.selector = option.selector.slice(1);
+                option.restrict = 'C';
+            }
+        }
+        option.controller = classes;
+        classes['$directiveOption'] = {
+            [option.selector]() {
+                return option;
+            }
+        };
     }
 }
 
 export function Injectable(option: InjectableOption) {
     return function (classes) {
-        classes.serviceName = option.name;
+        classes['$injectable'] = {
+            [option.name]: classes
+        };
     }
 }
 
 export function NgModule(option: IModule) {
     return function (target) {
-        target['moduleName'] = option.name || "module" + nextId();
-        const mod = module(target['moduleName'], transformImports(option.imports || []));
+        target['$moduleName'] = option.name || "module" + nextId();
+        const mod = module(target['$moduleName'], transformImports(option.imports || []));
+
+        option.providers && registerProviders(option.providers, 'provider', '$injectable');
+        option.services && registerProviders(option.services, 'service', '$injectable');
+        option.pipes && registerProviders(option.pipes, 'filter', '$injectable');
+        option.directives && registerProviders(option.directives, 'directive', '$directiveOption');
+        option.configs && registerProviders(option.configs, 'config');
 
         if (option.routers) {
             registerRouter(option.routers);
@@ -33,33 +61,25 @@ export function NgModule(option: IModule) {
         if (option.components) {
             registerComponents(option.components);
         }
-        option.providers && registerProviders(option.providers, 'provider');
-        option.services && registerProviders(option.services, 'service');
-        option.pipes && registerProviders(option.pipes, 'filter');
-
-        if (option.configs) {
-            registerConfigs(option.configs);
-        }
 
         function transformImports(imports: any[]) {
             return imports.map(item => {
                 if (typeof item === 'string') {
                     return item;
                 }
-                return item.moduleName || item.name;
+                return item['$moduleName'] || item.name;
             })
         }
 
         function registerComponents(comps: any[]) {
-            comps.forEach(comp => mod.component(comp['componentName'], comp['componentOption']));
+            comps.forEach(comp => {
+                const option: IComponentOptions = comp['$componentOption'];
+                mod.component(option.selector, option);
+            });
         }
 
-        function registerProviders(prods: any[], method) {
-            prods.forEach(prod => mod[method](prod.serviceName, prod));
-        }
-
-        function registerConfigs(configs: any[]) {
-            configs.forEach(config => mod.config(config));
+        function registerProviders(prods: any[], method: string, inject?: string) {
+            prods.forEach(prod => mod[method](inject ? prod[inject] : prod));
         }
 
         function registerRouter(routers: any[]) {
@@ -79,19 +99,21 @@ export function NgModule(option: IModule) {
         }
 
         function fromState(state) {
-            state.component && comp(state);
+            state.component && transformCompToString(state);
 
             if (state.views) {
                 forEach(state.views, function (view, key) {
-                    view.component && comp(view);
+                    view.component && transformCompToString(view);
                 });
             }
 
             return state;
         }
 
-        function comp(state) {
-            state.component = state.component.componentName || state.component;
+        function transformCompToString(state) {
+            const component = state.component;
+            const option: IComponentOptions = component['$componentOption'];
+            state.component = option.selector || component;
         }
     }
 }

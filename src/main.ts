@@ -8,4 +8,4 @@
 import {bootstrap} from "angular";
 import {RootModule} from "./root.module";
 
-bootstrap(document, [RootModule['moduleName']]);
+bootstrap(document, [RootModule['$moduleName']]);

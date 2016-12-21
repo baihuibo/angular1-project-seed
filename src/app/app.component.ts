@@ -2,12 +2,12 @@
 import {Component} from "annotation";
 
 @Component({
+    selector: 'app',
     template: require('./app.component.html'),
     controllerAs: 'ctrl'
 })
 export class AppComponent {
     static $inject = [];
-    static componentName = 'app';
 
     list = ['a', 'b', 'c']
 }

@@ -1,17 +1,22 @@
 // Created by baihuibo on 2016/12/15.
-import AppRouting from "./app-routing";
+import {NgModule} from "annotation";
+import {ShareModule} from "./share/share.module";
+import {DefaultRoutingConfig, AppRouting} from "./app-routing";
+
 import {PageAComponent} from "./pagea/pagea.component";
 import {PageBComponent} from "./pageb/pageb.component";
 import {AppComponent} from "./app.component";
-import {NgModule} from "annotation";
+
 import {PageAService} from "./pagea/pagea.service";
-import {ShareModule} from "./share/share.module";
+import {TestDirective} from "./pagea/test.directive";
 
 @NgModule({
-    imports: ['ui.router' , ShareModule],
+    imports: [ShareModule],
     components: [PageAComponent, PageBComponent, AppComponent],
     services: [PageAService],
-    routers: [AppRouting]
+    directives: [TestDirective],
+    routers: [AppRouting],
+    configs: [DefaultRoutingConfig]
 })
 export class AppModule {
 

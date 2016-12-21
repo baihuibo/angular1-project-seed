@@ -1,17 +1,13 @@
 // Created by baihuibo on 2016/12/15.
-import "angular-ui-router";
-import "angular-resource";
-
-import "./styles/main.less";
+import {NgModule} from "annotation";
+import {AppModule} from "./app/app.module";
 
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-import {AppModule} from "./app/app.module";
-import {NgModule} from "annotation";
+import "./styles/main.less";
 
 @NgModule({
-    imports: [AppModule, 'ui.router', 'ngResource']
+    imports: [AppModule]
 })
 export class RootModule {
 

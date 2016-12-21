@@ -2,22 +2,63 @@
 ///<reference path="../node_modules/@types/angular/index.d.ts"/>
 
 declare module "annotation" {
-    export function Component(option: angular.IComponentOptions);
+    import IDirectiveCompileFn = angular.IDirectiveCompileFn;
+    import Injectable = angular.Injectable;
+    import IControllerConstructor = angular.IControllerConstructor;
+    import IDirectiveLinkFn = angular.IDirectiveLinkFn;
+    import IDirectivePrePost = angular.IDirectivePrePost;
+    import IAttributes = angular.IAttributes;
+    export function Component(option: IComponentOptions);
 
     export function NgModule(option: IModule);
 
     export function Injectable(option: InjectableOption);
+
+    export function Directive(option: IDirectiveOption);
+
+    interface IComponentOptions {
+        selector?: string
+        controller?: string | Injectable<any>;
+        controllerAs?: string;
+        template?: string | Injectable<(...args: any[]) => string>;
+        templateUrl?: string | Injectable<(...args: any[]) => string>;
+        bindings?: {[boundProperty: string]: string};
+        transclude?: boolean | {[slot: string]: string};
+        require?: {[controller: string]: string};
+    }
+
+    interface IDirectiveOption {
+        selector?: string
+        compile?: IDirectiveCompileFn;
+        controller?: string | Injectable<IControllerConstructor>;
+        controllerAs?: string;
+        bindToController?: boolean | {[boundProperty: string]: string};
+        link?: IDirectiveLinkFn | IDirectivePrePost;
+        multiElement?: boolean;
+        priority?: number;
+        replace?: boolean;
+        require?: string | string[] | {[controller: string]: string};
+        restrict?: string;
+        scope?: boolean | {[boundProperty: string]: string};
+        template?: string | ((tElement: JQuery, tAttrs: IAttributes) => string);
+        templateNamespace?: string;
+        templateUrl?: string | ((tElement: JQuery, tAttrs: IAttributes) => string);
+        terminal?: boolean;
+        transclude?: boolean | 'element' | {[slot: string]: string};
+    }
 
     interface IModule {
         name?: string // 模块名称
         imports?: any[] // 导入模块
         routers?: any[] // 路由支持
         components?: any[] // 组件支持
+        directives?: any[] // 指令支持
         services?: any[] // 服务提供
         providers?: any[] // 服务提供
         configs?: any[] // 模块配置
         pipes?: any[] // 过滤器 filter服务支持
     }
+
     interface InjectableOption {
         name: string
     }

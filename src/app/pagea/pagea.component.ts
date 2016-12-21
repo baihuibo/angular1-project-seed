@@ -12,6 +12,5 @@ export class PageAComponent {
 
     constructor(aService: PageAService, core: CoreService) {
         aService.addItem({test1: 1});
-        console.log('core', core);
     }
 }
