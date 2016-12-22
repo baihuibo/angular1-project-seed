@@ -129,6 +129,14 @@ export function Output(name?: string) {
     return input_output_proxy(name, '&');
 }
 
+export function Require(require: string) {
+    return function (target, key) {
+        componentOptionSet(target.constructor, {
+            require: {[key]: require}
+        });
+    }
+}
+
 function input_output_proxy(name, symbol) {
     return function (target, key) {
         componentOptionSet(target.constructor, {
@@ -137,7 +145,7 @@ function input_output_proxy(name, symbol) {
     }
 }
 
-function componentOptionSet(classes, customOption?) {
+function componentOptionSet(classes, customOption?:IComponentOptions) {
     const option = classes['$componentOption'] || {};
     classes['$componentOption'] = option;
     if (customOption) {

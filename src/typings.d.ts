@@ -22,6 +22,8 @@ declare module "annotation" {
 
     export function Output(name?: string);
 
+    export function Require(require?: string);
+
     interface IComponentOptions {
         selector?: string
         controller?: string | Injectable<any>;

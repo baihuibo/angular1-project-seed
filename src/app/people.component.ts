@@ -1,5 +1,6 @@
 // Created by baihuibo on 2016/12/22.
-import {Component, Input, Output} from "annotation";
+import {Component, Input, Output , Require} from "annotation";
+import {AppComponent} from "./app.component";
 
 @Component({
     selector: 'appPeople',
@@ -16,5 +17,11 @@ export class PeopleComponent {
 
     @Input() people;
 
-    @Output() peopleClick;
+    @Output() peopleClick: Function;
+
+    @Require('^app') appCtrl: AppComponent;
+
+    $onInit() {
+        console.log('people component :', this.appCtrl);
+    }
 }
