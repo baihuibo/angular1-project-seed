@@ -9,10 +9,11 @@ import {AppComponent} from "./app.component";
 
 import {PageAService} from "./pagea/pagea.service";
 import {TestDirective} from "./pagea/test.directive";
+import {PeopleComponent} from "./people.component";
 
 @NgModule({
     imports: [ShareModule],
-    components: [PageAComponent, PageBComponent, AppComponent],
+    components: [PageAComponent, PageBComponent, AppComponent , PeopleComponent],
     services: [PageAService],
     directives: [TestDirective],
     routers: [AppRouting],

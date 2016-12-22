@@ -9,5 +9,15 @@ import {Component} from "annotation";
 export class AppComponent {
     static $inject = [];
 
-    list = ['a', 'b', 'c']
+    peopleList = [{
+        name: 'xiaobai',
+        age: 11
+    }, {
+        name: 'xiaohei',
+        age: 13
+    }];
+
+    peopleClick(people) {
+        console.log('clicked', people);
+    }
 }

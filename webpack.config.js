@@ -44,7 +44,7 @@ module.exports = {
             },
             {test: /\.(svg|woff2|woff|ttf|eot|jpg|png)/, loaders: "url-loader?limit=10240"},
         ],
-        noParse: /(angular|jquery|bootstrap)\.js$/
+        noParse: /(angular-resource\.min|bootstrap\.min)\.js/
     },
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({

@@ -1,5 +1,6 @@
 // Created by baihuibo on 16/8/30.
 import {module, forEach} from "angular";
+import {extend} from "jquery";
 import {IModule, InjectableOption, IComponentOptions, IDirectiveOption} from "annotation";
 
 const uniqcomp = {};
@@ -11,7 +12,7 @@ export function Component(option: IComponentOptions): any {
         }
         uniqcomp[option.selector] = true;
         option.controller = classes;
-        classes['$componentOption'] = option;
+        componentOptionSet(classes, option);
     }
 }
 
@@ -115,6 +116,32 @@ export function NgModule(option: IModule) {
             const option: IComponentOptions = component['$componentOption'];
             state.component = option.selector || component;
         }
+    }
+}
+
+export function Input(name?: string, optional?: boolean) {
+    return input_output_proxy(name, optional ? '<?' : '<');
+}
+export function InputOnly(name?: string, optional?: boolean) {
+    return input_output_proxy(name, optional ? '@?' : '@');
+}
+export function Output(name?: string) {
+    return input_output_proxy(name, '&');
+}
+
+function input_output_proxy(name, symbol) {
+    return function (target, key) {
+        componentOptionSet(target.constructor, {
+            bindings: {[name || key]: symbol}
+        });
+    }
+}
+
+function componentOptionSet(classes, customOption?) {
+    const option = classes['$componentOption'] || {};
+    classes['$componentOption'] = option;
+    if (customOption) {
+        extend(true, option, customOption);
     }
 }
 

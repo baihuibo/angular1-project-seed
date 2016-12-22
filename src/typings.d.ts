@@ -16,6 +16,12 @@ declare module "annotation" {
 
     export function Directive(option: IDirectiveOption);
 
+    export function Input(name?: string, optional?: boolean);
+
+    export function InputOnly(name?: string, optional?: boolean);
+
+    export function Output(name?: string);
+
     interface IComponentOptions {
         selector?: string
         controller?: string | Injectable<any>;

@@ -9,6 +9,8 @@
 
 <ui-view></ui-view>
 
-<ul>
-    <li ng-repeat="item in ctrl.list">{{item}}</li>
-</ul>
+<app-people
+        people="people"
+        people-click="ctrl.peopleClick(xx)"
+        ng-repeat="people in ctrl.peopleList">{{item}}
+</app-people>
