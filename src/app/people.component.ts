@@ -4,7 +4,7 @@ import {Component, Input, Output} from "annotation";
 @Component({
     selector: 'appPeople',
     template: `
-        <dl ng-click="ctrl.peopleClick({xx:11})">
+        <dl ng-click="ctrl.peopleClick({$event:11})">
             <dt>name : {{ctrl.people.name}}</dt>
             <dd>age : {{ctrl.people.age}}</dd>
         </dl>

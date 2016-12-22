@@ -17,7 +17,7 @@ export class AppComponent {
         age: 13
     }];
 
-    peopleClick(people) {
-        console.log('clicked', people);
+    peopleClick(peopleReturnValue) {
+        console.log('clicked', peopleReturnValue);
     }
 }
