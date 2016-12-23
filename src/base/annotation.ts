@@ -145,7 +145,7 @@ function input_output_proxy(name, symbol) {
     }
 }
 
-function componentOptionSet(classes, customOption?:IComponentOptions) {
+function componentOptionSet(classes, customOption?: IComponentOptions) {
     const option = classes['$componentOption'] || {};
     classes['$componentOption'] = option;
     if (customOption) {

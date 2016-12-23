@@ -8,6 +8,9 @@ declare module "annotation" {
     import IDirectiveLinkFn = angular.IDirectiveLinkFn;
     import IDirectivePrePost = angular.IDirectivePrePost;
     import IAttributes = angular.IAttributes;
+    import IStateParamsService = angular.ui.IStateParamsService;
+    import IUrlMatcher = angular.ui.IUrlMatcher;
+
     export function Component(option: IComponentOptions);
 
     export function NgModule(option: IModule);
@@ -65,12 +68,34 @@ declare module "annotation" {
         providers?: any[] // 服务提供
         configs?: any[] // 模块配置
         pipes?: any[] // 过滤器 filter服务支持
+        bootstrap?: any[]
     }
 
     interface InjectableOption {
         name: string
     }
-}
 
+    interface Router {
+        name?: string;
+        template?: string | {(params: IStateParamsService): string};
+        templateUrl?: string | {(params: IStateParamsService): string};
+        templateProvider?: Function | Array<string | Function>;
+        component?: string | Function;
+        controller?: Function | string | Array<string | Function>;
+        controllerAs?: string;
+        controllerProvider?: Function | Array<string | Function>;
+        parent?: string | Router;
+        resolve?: {[name: string]: any};
+        url?: string | IUrlMatcher;
+        params?: any;
+        views?: {[name: string]: Router};
+        abstract?: boolean;
+        onEnter?: Function | Array<string | Function>;
+        onExit?: Function | Array<string | Function>;
+        data?: any;
+        reloadOnSearch?: boolean;
+        cache?: boolean;
+    }
+}
 
 declare var require;

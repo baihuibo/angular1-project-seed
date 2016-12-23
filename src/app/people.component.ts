@@ -1,5 +1,5 @@
 // Created by baihuibo on 2016/12/22.
-import {Component, Input, Output , Require} from "annotation";
+import {Component, Input, Output, Require} from "annotation";
 import {AppComponent} from "./app.component";
 
 @Component({

@@ -1,8 +1,9 @@
 // Created by baihuibo on 2016/12/17.
 import {PageAComponent} from "./pagea/pagea.component";
 import {PageBComponent} from "./pageb/pageb.component";
+import {Router} from "annotation";
 
-export const AppRouting = [{
+export const AppRouting: Router[] = [{
     url: '/pagea',
     name: 'pagea',
     component: PageAComponent

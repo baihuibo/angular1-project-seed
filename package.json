@@ -2,7 +2,8 @@
   "name": "application-name",
   "version": "0.0.1",
   "scripts": {
-    "start": "webpack --watch"
+    "start": "webpack --watch",
+    "build": "webpack -p"
   },
   "dependencies": {
     "angular": "^1.6.0",
