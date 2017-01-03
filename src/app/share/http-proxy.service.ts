@@ -32,8 +32,8 @@ export class HttpProxy {
             put<T>(name: string, data: Object, httpConfig?: angular.IRequestShortcutConfig): angular.IHttpPromise<T>{
                 return self.proxy('put', name, config, data, httpConfig);
             },
-            pagingResource(){
-                return self.$resource(self.getUrl(config, 'paging'));
+            pagingResource(name: string = 'paging'){
+                return self.$resource(self.getUrl(config, name));
             }
         }
     }
@@ -79,5 +79,5 @@ export interface IHttpProxy {
     put<T>(name: string, data?: Object, httpConfig?: angular.IRequestShortcutConfig): angular.IHttpPromise<T>
     delete<T>(name: string, httpConfig?: angular.IRequestShortcutConfig): angular.IHttpPromise<T>
     remove<T>(name: string, httpConfig?: angular.IRequestShortcutConfig): angular.IHttpPromise<T>
-    pagingResource()
+    pagingResource(name?: string)
 }
