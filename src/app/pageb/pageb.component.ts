@@ -7,9 +7,8 @@ import {CoreService} from "../share/core.service";
     controllerAs: 'ctrl'
 })
 export class PageBComponent {
-    static $inject = ['$state', 'CoreService'];
+    static $inject = ['$state', 'CoreService', '$log'];
 
-    constructor($state, core: CoreService) {
-        console.log('pageb', core);
+    constructor($state, core: CoreService, $log: angular.ILogService) {
     }
 }

@@ -2,13 +2,14 @@
 import {NgModule} from "annotation";
 
 import {CoreService} from "./core.service";
+import {HttpProxy} from "./http-proxy.service";
 
 import "angular-ui-router";
 import "angular-resource";
 
 @NgModule({
     imports: ['ui.router', 'ngResource'],
-    services: [CoreService]
+    services: [CoreService, HttpProxy]
 })
 export class ShareModule {
 }

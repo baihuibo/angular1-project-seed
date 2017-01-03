@@ -11,6 +11,6 @@ export class PageAComponent {
     static $inject = ['PageAService', 'CoreService'];
 
     constructor(aService: PageAService, core: CoreService) {
-        aService.addItem({test1: 1});
+        aService.addItem({newItem: true, name: 'new item'});
     }
 }
