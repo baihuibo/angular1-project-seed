@@ -1,6 +1,6 @@
 // Created by baihuibo on 2017/1/3.
 import {Injectable} from "annotation";
-import {coupling} from "../properties";
+import {coupling} from "../../properties";
 
 @Injectable({
     name: 'HttpProxy'
@@ -32,7 +32,7 @@ export class HttpProxy {
             put<T>(name: string, data: Object, httpConfig?: angular.IRequestShortcutConfig): angular.IHttpPromise<T>{
                 return self.proxy('put', name, config, data, httpConfig);
             },
-            pagingResource<T>(){
+            pagingResource(){
                 return self.$resource(self.getUrl(config, 'paging'));
             }
         }
@@ -79,5 +79,5 @@ export interface IHttpProxy {
     put<T>(name: string, data?: Object, httpConfig?: angular.IRequestShortcutConfig): angular.IHttpPromise<T>
     delete<T>(name: string, httpConfig?: angular.IRequestShortcutConfig): angular.IHttpPromise<T>
     remove<T>(name: string, httpConfig?: angular.IRequestShortcutConfig): angular.IHttpPromise<T>
-    pagingResource<T>()
+    pagingResource()
 }
