@@ -33,7 +33,7 @@ export class HttpProxy {
                 return self.proxy('put', name, config, data, httpConfig);
             },
             pagingResource(name: string = 'paging'){
-                return self.$resource(self.getUrl(config, name));
+                return self.$resource(self.getUrl(config, name, true));
             }
         }
     }
@@ -44,20 +44,21 @@ export class HttpProxy {
         return this.http[method](url, data, httpConfig);
     }
 
-    private getUrl(config: IConfig, name: string) {
+    private getUrl(config: IConfig, name: string, noautocombo?: boolean) {
         if (coupling) {
+            if (noautocombo) { // 不需要合并参数
+                return config.url;
+            }
             return `${config.url}?${name}=true`;
         }
 
-        try {
-            if (config.mappings[name]) {
-                return config.mappings[name];
-            }
-            throw `无法找到静态资源地址，请检查配置文件:url = ${config.url} , name = ${name}`;
-        } catch (e) {
-            this.$window.alert(e);
-            this.$log.error(e);
+        if (config.mappings[name]) {
+            return config.mappings[name];
         }
+
+        const e = `无法找到静态资源地址，请检查配置文件: \n url = ${config.url} \n name = ${name}`;
+        this.$window.alert(e);
+        throw e;
     }
 
     private getMethod(method: string) {
