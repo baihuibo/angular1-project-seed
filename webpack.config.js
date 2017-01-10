@@ -11,7 +11,7 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.js', '.json', '.html'],
         alias: {
-            'annotation$': path.resolve(__dirname, "src/base/annotation.ts"),
+            'annotation$': path.resolve(__dirname, "src/core/annotation.ts"),
             'angular-ui-router': path.resolve(__dirname, "node_modules/angular-ui-router/release/angular-ui-router.min.js"),
             'angular-resource': path.resolve(__dirname, "node_modules/angular-resource/angular-resource.min.js"),
             'bootstrap/dist/css/bootstrap.min.css': path.resolve(__dirname, "node_modules/bootstrap/dist/css/bootstrap.min.css"),

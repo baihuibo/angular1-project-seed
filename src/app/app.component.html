@@ -5,12 +5,13 @@
 <nav>
     <a ui-sref="pagea">a page</a>
     <a ui-sref="pageb">b page</a>
+    <a ui-sref="users">users page</a>
 </nav>
 
 <ui-view></ui-view>
 
 <app-people
         people="people"
-        people-click="ctrl.peopleClick($event)"
-        ng-repeat="people in ctrl.peopleList">
+        people-click="$ctrl.peopleClick($event)"
+        ng-repeat="people in $ctrl.peopleList">
 </app-people>

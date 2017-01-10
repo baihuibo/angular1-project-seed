@@ -12,18 +12,18 @@ export class PageAService {
 
     constructor(httpProxy: HttpProxy, private $log: angular.ILogService) {
         this.http = httpProxy.createHttp({
-            url: 'path/to/test.shtml',
+            url: 'path/to/users.shtml',
             mappings: {
-                test: 'tsconfig.json'
+                paging: 'resource/paging-users.json'
             }
         });
     }
 
     addItem(item) {
-        // 联调模式 coupling => GET  http://host/path/to/test.shtml?test=true
+        // 联调模式 coupling => GET  http://host/path/to/test.shtml?paging=true
         // 开发模式 => POST http://host/tsconfig.json
-        return this.http.get('test', {params: item}).then(data => {
-            this.$log.log(data);
+        return this.http.get('paging', {params: item}).then((response: angular.IHttpPromiseCallbackArg<any>) => {
+            return response.data;
         });
     }
 }

@@ -3,8 +3,7 @@ import {Component} from "annotation";
 
 @Component({
     selector: 'app',
-    template: require('./app.component.html'),
-    controllerAs: 'ctrl'
+    template: require('./app.component.html')
 })
 export class AppComponent {
     static $inject = [];

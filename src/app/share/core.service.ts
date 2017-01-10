@@ -5,5 +5,4 @@ import {Injectable} from "annotation";
     name: 'CoreService'
 })
 export class CoreService {
-
 }

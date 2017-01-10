@@ -6,6 +6,6 @@
 // type = [component , module , service , filter , directive]
 
 import {RootModule} from "./root.module";
-import {bootstrapModule} from "./base/browser-bootstrap";
+import {bootstrapModule} from "./core/browser-bootstrap";
 
 bootstrapModule(RootModule);
