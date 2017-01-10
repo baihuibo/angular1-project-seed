@@ -3,7 +3,7 @@
 
 // 文件命名规则
 //  [name].[type].[html,css,js,ts]
-// type = [component , module , service , filter , directive]
+// type = [component , module , service , pipe , directive]
 
 import {RootModule} from "./root.module";
 import {bootstrapModule} from "./core/browser-bootstrap";
