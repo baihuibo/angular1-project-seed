@@ -100,4 +100,4 @@ declare module "annotation" {
     }
 }
 
-declare var require;
+declare const require;
