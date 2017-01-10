@@ -5,7 +5,7 @@
 //  [name].[type].[html,css,js,ts]
 // type = [component , module , service , filter , directive]
 
-import {bootstrap} from "angular";
 import {RootModule} from "./root.module";
+import {bootstrapModule} from "./base/browser-bootstrap";
 
-bootstrap(document, [RootModule['$moduleName']]);
+bootstrapModule(RootModule);

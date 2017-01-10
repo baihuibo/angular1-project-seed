@@ -3,22 +3,25 @@ import {module, forEach} from "angular";
 import {extend} from "jquery";
 import {IModule, InjectableOption, IComponentOptions, IDirectiveOption} from "annotation";
 
-const uniqcomp = {};
+export enum Names {
+    component = 1,
+    directive = 2,
+    module = 3,
+    injectable = 4,
+}
+
 export function Component(option: IComponentOptions): any {
     return function (classes) {
         option.selector = option.selector || 'comp' + nextId();
-        if (uniqcomp[option.selector]) {
-            throw `请不要设置重复的 'selector' 名称(${option.selector})`;
-        }
-        uniqcomp[option.selector] = true;
         option.controller = classes;
-        componentOptionSet(classes, option);
+        setMetaData(classes, option, Names.component);
     }
 }
 
 export function Directive(option: IDirectiveOption) {
     return function (classes) {
         if (option.selector) {
+            option.selector = option.selector.trim();
             const first = option.selector[0];
             if (first == '[') {// attr
                 option.selector = option.selector.slice(1, -1);
@@ -29,31 +32,31 @@ export function Directive(option: IDirectiveOption) {
             }
         }
         option.controller = classes;
-        classes['$directiveOption'] = {
-            [option.selector]() {
-                return option;
+        setMetaData(classes, {
+            [option.selector](){
+                return option
             }
-        };
+        }, Names.directive);
     }
 }
 
 export function Injectable(option: InjectableOption) {
     return function (classes) {
-        classes['$injectable'] = {
+        setMetaData(classes, {
             [option.name]: classes
-        };
+        }, Names.injectable);
     }
 }
 
 export function NgModule(option: IModule) {
-    return function (target) {
-        target['$moduleName'] = option.name || "module" + nextId();
-        const mod = module(target['$moduleName'], transformImports(option.imports || []));
+    return function (classes) {
+        classes[Names.module] = option.name || "module" + nextId();
+        const mod = module(classes[Names.module], transformImports(option.imports || []));
 
-        option.providers && registerProviders(option.providers, 'provider', '$injectable');
-        option.services && registerProviders(option.services, 'service', '$injectable');
-        option.pipes && registerProviders(option.pipes, 'filter', '$injectable');
-        option.directives && registerProviders(option.directives, 'directive', '$directiveOption');
+        option.providers && registerProviders(option.providers, 'provider', Names.injectable);
+        option.services && registerProviders(option.services, 'service', Names.injectable);
+        option.pipes && registerProviders(option.pipes, 'filter', Names.injectable);
+        option.directives && registerProviders(option.directives, 'directive', Names.directive);
         option.configs && registerProviders(option.configs, 'config');
 
         if (option.routers) {
@@ -64,23 +67,23 @@ export function NgModule(option: IModule) {
         }
 
         function transformImports(imports: any[]) {
-            return imports.map(item => {
-                if (typeof item === 'string') {
-                    return item;
+            return imports.map(module => {
+                if (typeof module === 'string') {
+                    return module;
                 }
-                return item['$moduleName'] || item.name;
-            })
+                return module[Names.module] || module.name;
+            });
         }
 
         function registerComponents(comps: any[]) {
             comps.forEach(comp => {
-                const option: IComponentOptions = comp['$componentOption'];
+                const option: IComponentOptions = comp[Names.component];
                 mod.component(option.selector, option);
             });
         }
 
-        function registerProviders(prods: any[], method: string, inject?: string) {
-            prods.forEach(prod => mod[method](inject ? prod[inject] : prod));
+        function registerProviders(items: any[], method: string, names?: Names) {
+            items.forEach(item => mod[method](names ? item[names] : item));
         }
 
         function registerRouter(routers: any[]) {
@@ -99,11 +102,11 @@ export function NgModule(option: IModule) {
             }
         }
 
-        function fromState(state) {
+        function fromState(state: angular.ui.IState) {
             state.component && transformCompToString(state);
 
             if (state.views) {
-                forEach(state.views, function (view, key) {
+                forEach(state.views, function (view: angular.ui.IState, key) {
                     view.component && transformCompToString(view);
                 });
             }
@@ -111,45 +114,47 @@ export function NgModule(option: IModule) {
             return state;
         }
 
-        function transformCompToString(state) {
-            const component = state.component;
-            const option: IComponentOptions = component['$componentOption'];
-            state.component = option.selector || component;
+        function transformCompToString(state: angular.ui.IState) {
+            const comp = state.component;
+            const option: IComponentOptions = comp[Names.component];
+            state.component = option.selector || comp;
         }
     }
 }
 
 export function Input(name?: string, optional?: boolean) {
-    return input_output_proxy(name, optional ? '<?' : '<');
+    return bindings_proxy(name, optional ? '<?' : '<');
 }
 export function InputOnly(name?: string, optional?: boolean) {
-    return input_output_proxy(name, optional ? '@?' : '@');
+    return bindings_proxy(name, optional ? '@?' : '@');
+}
+export function Bindings(name?: string, optional?: boolean) {
+    return bindings_proxy(name, optional ? '=?' : '=');
 }
 export function Output(name?: string) {
-    return input_output_proxy(name, '&');
+    return bindings_proxy(name, '&');
 }
 
 export function Require(require: string) {
     return function (target, key) {
-        componentOptionSet(target.constructor, {
+        setMetaData(target.constructor, {
             require: {[key]: require}
-        });
+        }, Names.component);
     }
 }
 
-function input_output_proxy(name, symbol) {
+function bindings_proxy(name, symbol) {
     return function (target, key) {
-        componentOptionSet(target.constructor, {
+        setMetaData(target.constructor, {
             bindings: {[name || key]: symbol}
-        });
+        }, Names.component);
     }
 }
 
-function componentOptionSet(classes, customOption?: IComponentOptions) {
-    const option = classes['$componentOption'] || {};
-    classes['$componentOption'] = option;
-    if (customOption) {
-        extend(true, option, customOption);
+function setMetaData(classes, option, names: Names) {
+    classes[names] = classes[names] || {};
+    if (option) {
+        extend(true, classes[names], option);
     }
 }
 

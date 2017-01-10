@@ -23,6 +23,8 @@ declare module "annotation" {
 
     export function InputOnly(name?: string, optional?: boolean);
 
+    export function Bindings(name?: string, optional?: boolean);
+
     export function Output(name?: string);
 
     export function Require(require?: string);
