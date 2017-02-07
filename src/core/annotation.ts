@@ -12,7 +12,7 @@ export enum Names {
 
 export function Component(option: IComponentOptions): any {
     return function (classes) {
-        option.selector = option.selector ? snakeToCamel(option.selector.trim()) : 'component' + nextId();
+        option.selector = option.selector ? strandToCamel(option.selector.trim()) : 'component' + nextId();
         option.controller = classes;
         setMetaData(classes, option, Names.component);
     }
@@ -31,7 +31,7 @@ export function Directive(option: IDirectiveOption) {
             selector = selector.slice(1);
             option.restrict = 'C';
         }
-        selector = snakeToCamel(selector);
+        selector = strandToCamel(selector);
 
         option.controller = classes;
         setMetaData(classes, {
@@ -155,8 +155,8 @@ function setMetaData(classes, option, names: Names) {
     }
 }
 
-// 蛇转驼峰 (aaa-test) => (aaaTest)
-function snakeToCamel(name: string) {
+// 串转驼峰 (aaa-test) => (aaaTest)
+function strandToCamel(name: string) {
     return name.replace(/-([a-z])/g, fnCamelCaseReplace);
 }
 
