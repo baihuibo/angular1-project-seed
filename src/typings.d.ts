@@ -41,7 +41,7 @@ declare module "annotation" {
     }
 
     interface IDirectiveOption {
-        selector?: string
+        selector: string
         compile?: IDirectiveCompileFn;
         controller?: string | Injectable<IControllerConstructor>;
         controllerAs?: string;

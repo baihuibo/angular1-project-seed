@@ -3,6 +3,7 @@ import {Component} from "annotation";
 import {CoreService} from "../share/core.service";
 
 @Component({
+    selector: '',
     template: require('./pageb.component.html')
 })
 export class PageBComponent {

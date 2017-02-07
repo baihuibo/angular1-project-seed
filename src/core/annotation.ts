@@ -12,7 +12,7 @@ export enum Names {
 
 export function Component(option: IComponentOptions): any {
     return function (classes) {
-        option.selector = option.selector || 'comp' + nextId();
+        option.selector = option.selector ? snakeToCamel(option.selector.trim()) : 'component' + nextId();
         option.controller = classes;
         setMetaData(classes, option, Names.component);
     }
@@ -20,20 +20,22 @@ export function Component(option: IComponentOptions): any {
 
 export function Directive(option: IDirectiveOption) {
     return function (classes) {
-        if (option.selector) {
-            option.selector = option.selector.trim();
-            const first = option.selector[0];
-            if (first == '[') {// attr
-                option.selector = option.selector.slice(1, -1);
-                option.restrict = 'A';
-            } else if (first == '.') {// class
-                option.selector = option.selector.slice(1);
-                option.restrict = 'C';
-            }
+        let selector = option.selector.trim();
+
+        const first = selector[0];
+
+        if (first == '[') {// attr
+            selector = selector.slice(1, -1);
+            option.restrict = 'A';
+        } else if (first == '.') {// class
+            selector = selector.slice(1);
+            option.restrict = 'C';
         }
+        selector = snakeToCamel(selector);
+
         option.controller = classes;
         setMetaData(classes, {
-            [option.selector](){
+            [selector](){
                 return option
             }
         }, Names.directive);
@@ -53,18 +55,13 @@ export function NgModule(option: IModule) {
         classes[Names.module] = option.name || "module" + nextId();
         const mod = module(classes[Names.module], transformImports(option.imports || []));
 
-        option.providers && registerProviders(option.providers, 'provider', Names.injectable);
-        option.services && registerProviders(option.services, 'service', Names.injectable);
-        option.pipes && registerProviders(option.pipes, 'filter', Names.injectable);
-        option.directives && registerProviders(option.directives, 'directive', Names.directive);
-        option.configs && registerProviders(option.configs, 'config');
-
-        if (option.routers) {
-            registerRouter(option.routers);
-        }
-        if (option.components) {
-            registerComponents(option.components);
-        }
+        registerProviders(option.providers, 'provider', Names.injectable);
+        registerProviders(option.services, 'service', Names.injectable);
+        registerProviders(option.pipes, 'filter', Names.injectable);
+        registerProviders(option.directives, 'directive', Names.directive);
+        registerProviders(option.configs, 'config');
+        registerRouter(option.routers);
+        registerComponents(option.components);
 
         function transformImports(imports: any[]) {
             return imports.map(module => {
@@ -76,18 +73,18 @@ export function NgModule(option: IModule) {
         }
 
         function registerComponents(comps: any[]) {
-            comps.forEach(comp => {
+            comps && comps.forEach(comp => {
                 const option: IComponentOptions = comp[Names.component];
                 mod.component(option.selector, option);
             });
         }
 
         function registerProviders(items: any[], method: string, names?: Names) {
-            items.forEach(item => mod[method](names ? item[names] : item));
+            items && items.forEach(item => mod[method](names ? item[names] : item));
         }
 
         function registerRouter(routers: any[]) {
-            routers.forEach(router => {
+            routers && routers.forEach(router => {
                 mod.config(['$stateProvider', function ($stateProvider) {
                     if (Array.isArray(router)) {
                         router.forEach(state => register(fromState(state), $stateProvider));
@@ -156,6 +153,15 @@ function setMetaData(classes, option, names: Names) {
     if (option) {
         extend(true, classes[names], option);
     }
+}
+
+// 蛇转驼峰 (aaa-test) => (aaaTest)
+function snakeToCamel(name: string) {
+    return name.replace(/-([a-z])/g, fnCamelCaseReplace);
+}
+
+function fnCamelCaseReplace(all, letter) {
+    return letter.toUpperCase();
 }
 
 let id = 0;

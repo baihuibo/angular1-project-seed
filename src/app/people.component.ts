@@ -3,7 +3,7 @@ import {Component, Input, Output, Require} from "annotation";
 import {AppComponent} from "./app.component";
 
 @Component({
-    selector: 'appPeople',
+    selector: 'app-people',
     template: `
         <dl ng-click="ctrl.peopleClick({$event:11})">
             <dt>name : {{ctrl.people.name}}</dt>

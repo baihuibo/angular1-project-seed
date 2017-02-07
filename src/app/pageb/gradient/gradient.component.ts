@@ -2,7 +2,7 @@
 import {Component, InputOnly, Input} from "annotation";
 
 @Component({
-    selector: 'appGradient',
+    selector: 'app-gradient',
     template: require('./gradient.component.html')
 })
 export class GradientBComponent {
