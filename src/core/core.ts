@@ -1,6 +1,6 @@
 // Created by baihuibo on 16/8/30.
 import {module, forEach} from "angular";
-import {IModule, InjectableOption, IComponentOptions, IDirectiveOption,Router,PipeTransform,CanActivate} from "core";
+import {IModule, InjectableOption, IComponentOptions, IDirectiveOption, Router, PipeTransform, CanActivate} from "core";
 
 export enum Names {
     component = 1,
