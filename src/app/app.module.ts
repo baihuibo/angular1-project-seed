@@ -16,14 +16,16 @@ import {TestDirective} from "./pagea/test.directive";
 import {HttpDevProxyInterceptor} from "../core/http-dev-proxy.interceptor";
 import {HttpConfig} from "./http.config";
 import {HttpCacheInterceptor} from "../core/http-cache.interceptor";
+import {StatePipe} from "./pagea/state.pipe";
 
 @NgModule({
     imports: [ShareModule, UsersModule],
     components: [PageAComponent, PageBComponent, AppComponent, PeopleComponent, GradientBComponent],
     services: [PageAService, HttpDevProxyInterceptor, HttpCacheInterceptor],
     directives: [TestDirective],
+    pipes: [StatePipe],
     routers: [AppRouting],
-    configs: [DefaultRoutingConfig, HttpConfig]
+    configs: [DefaultRoutingConfig, HttpConfig],
 })
 export class AppModule {
 

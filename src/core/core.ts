@@ -1,14 +1,13 @@
 // Created by baihuibo on 16/8/30.
 import {module, forEach} from "angular";
-import {IModule, InjectableOption, IComponentOptions, IDirectiveOption} from "core";
-import {Router} from "core";
-import {CanActivate} from "core";
+import {IModule, InjectableOption, IComponentOptions, IDirectiveOption,Router,PipeTransform,CanActivate} from "core";
 
 export enum Names {
     component = 1,
     directive = 2,
     module = 3,
     injectable = 4,
+    pipe = 5
 }
 
 export function Component(option: IComponentOptions): any {
@@ -51,6 +50,12 @@ export function Injectable(option: InjectableOption) {
     }
 }
 
+export function Pipe(option: InjectableOption) {
+    return function (classes) {
+        classes[Names.pipe] = option;
+    }
+}
+
 export function NgModule(option: IModule) {
     return function (classes) {
         classes[Names.module] = option.name || "module" + nextId();
@@ -58,12 +63,12 @@ export function NgModule(option: IModule) {
 
         registerProviders(option.providers, 'provider', Names.injectable);
         registerProviders(option.services, 'service', Names.injectable);
-        registerProviders(option.pipes, 'filter', Names.injectable);
         registerProviders(option.directives, 'directive', Names.directive);
         registerProviders(option.configs, 'config');
         registerProviders(option.runs, 'run');
         registerRouter(option.routers);
         registerComponents(option.components);
+        registerPipe(option.pipes);
 
         function transformImports(imports: any[]) {
             return imports.map(module => {
@@ -83,6 +88,18 @@ export function NgModule(option: IModule) {
 
         function registerProviders(items: any[], method: string, names?: Names) {
             items && items.forEach(item => mod[method](names ? item[names] : item));
+        }
+
+        function registerPipe(pipes: any[]) {
+            pipes && pipes.forEach(pipe => {
+                const option: InjectableOption = pipe[Names.pipe];
+                mod.filter(option.name, ['$injector', function ($injector: angular.auto.IInjectorService) {
+                    const instance: PipeTransform = <any>$injector.instantiate(pipe);
+                    return function (value, ...args) {
+                        return instance.transform(value, ...args);
+                    }
+                }]);
+            });
         }
 
         function registerRouter(routers: any[]) {
@@ -108,7 +125,6 @@ export function NgModule(option: IModule) {
                         }
                         return result;
                     };
-                    console.log(router);
                     router.onEnter['$inject'] = ['$injector'];
                 }
                 $stateProvider.state(router.name, router);

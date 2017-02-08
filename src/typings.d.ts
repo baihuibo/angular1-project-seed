@@ -17,6 +17,8 @@ declare module "core" {
 
     export function Injectable(option: InjectableOption);
 
+    export function Pipe(option: InjectableOption);
+
     export function Directive(option: IDirectiveOption);
 
     export function Input(name?: string, optional?: boolean);
@@ -84,6 +86,10 @@ declare module "core" {
 
     interface InjectableOption {
         name: string
+    }
+
+    interface PipeTransform {
+        transform(value: any, ...args: any[]): any
     }
 
     interface Router {
