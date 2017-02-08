@@ -7,7 +7,7 @@ import {Directive} from "core";
 export class TestDirective {
     static $inject = ['$element'];
 
-    constructor($element) {
+    constructor($element:JQuery) {
         $element.css('color', 'red');
     }
 }

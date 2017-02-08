@@ -5,7 +5,7 @@ import "angular-ui-router";
 import "angular-resource";
 // import "ng-ui-router-state-events"; // 暂时不启用此插件
 
-import {UiRouterDefaultErrorHandlerConfig} from "./ui-router-default-error-handler";
+import {UiRouterDefaultErrorHandlerConfig} from "./ui-router-default-error.config";
 
 @NgModule({
     imports: ['ui.router', 'ngResource'],
