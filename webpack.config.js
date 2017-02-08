@@ -19,20 +19,25 @@ addToCopyList(angular.app.scripts);
 addToCopyList(angular.app.styles);
 addToCopyList(angular.app.assets, "assets");
 
+const extensions = ['.ts', '.js', '.json', '.html'];
+if (/prod|production/i.test(process.env['ENV_WEBPACK'])) {
+    extensions.unshift('.prod.ts');
+}
+
 module.exports = {
     context: path.resolve(__dirname, angular.app.root),
     entry: {
         'app': angular.app.main
     },
     resolve: {
-        extensions: ['.ts', '.js', '.json', '.html'],
+        extensions: extensions,
         alias: {
             'core$': path.resolve(__dirname, "src/core/core.ts")
         }
     },
     externals: {
-        jquery: 'jQuery',
-        angular: 'angular'
+        jquery: 'window.jQuery',
+        angular: 'window.angular'
     },
     module: {
         loaders: [

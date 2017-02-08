@@ -1,6 +1,6 @@
 // Created by baihuibo on 2017/1/3.
 import {Injectable} from "core";
-import {coupling} from "../../properties";
+import {environment} from "../../environments/environment";
 
 @Injectable({
     name: 'HttpProxy'
@@ -45,7 +45,7 @@ export class HttpProxy {
     }
 
     private getUrl(config: IConfig, name: string, noautocombo?: boolean) {
-        if (coupling) {
+        if (environment.production) {
             if (noautocombo) { // 不需要合并参数
                 return config.url;
             }
@@ -62,7 +62,7 @@ export class HttpProxy {
     }
 
     private getMethod(method: string) {
-        if (coupling) {
+        if (environment.production) {
             return method;
         }
         return 'post';

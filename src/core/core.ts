@@ -1,6 +1,5 @@
 // Created by baihuibo on 16/8/30.
 import {module, forEach} from "angular";
-import {extend} from "jquery";
 import {IModule, InjectableOption, IComponentOptions, IDirectiveOption} from "core";
 
 export enum Names {
@@ -151,7 +150,7 @@ function bindings_proxy(name, symbol) {
 function setMetaData(classes, option, names: Names) {
     classes[names] = classes[names] || {};
     if (option) {
-        extend(true, classes[names], option);
+        Object.assign(classes[names] , option);
     }
 }
 
