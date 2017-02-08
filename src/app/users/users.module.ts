@@ -1,6 +1,6 @@
 // Created by baihuibo on 2017/1/10.
 
-import {NgModule} from "annotation";
+import {NgModule} from "core";
 import {ShareModule} from "../share/share.module";
 import {UsersRouting} from "./users-routing";
 

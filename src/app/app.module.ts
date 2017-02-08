@@ -1,5 +1,5 @@
 // Created by baihuibo on 2016/12/15.
-import {NgModule} from "annotation";
+import {NgModule} from "core";
 import {ShareModule} from "./share/share.module";
 import {UsersModule} from "./users/users.module";
 

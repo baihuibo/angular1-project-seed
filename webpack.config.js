@@ -2,20 +2,26 @@
 const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const angular = require('./angular-conf.json');
+
+const copyList = [];
+const libPath = 'libs/';
+
+addToCopyList(angular.app.scripts);
+addToCopyList(angular.app.styles);
+addToCopyList(angular.app.assets, "assets");
 
 module.exports = {
+    context: path.resolve(__dirname, angular.app.root),
     entry: {
-        vendor: ["angular-ui-router", "angular-resource", "bootstrap"],
-        app: './src/main.ts'
+        'app': angular.app.main
     },
     resolve: {
         extensions: ['.ts', '.js', '.json', '.html'],
         alias: {
-            'annotation$': path.resolve(__dirname, "src/core/annotation.ts"),
-            'angular-ui-router': path.resolve(__dirname, "node_modules/angular-ui-router/release/angular-ui-router.min.js"),
-            'angular-resource': path.resolve(__dirname, "node_modules/angular-resource/angular-resource.min.js"),
-            'bootstrap/dist/css/bootstrap.min.css': path.resolve(__dirname, "node_modules/bootstrap/dist/css/bootstrap.min.css"),
-            'bootstrap': path.resolve(__dirname, "node_modules/bootstrap/dist/js/bootstrap.min.js"),
+            'core$': path.resolve(__dirname, "src/core/core.ts")
         }
     },
     externals: {
@@ -43,19 +49,51 @@ module.exports = {
                 })
             },
             {test: /\.(svg|woff2|woff|ttf|eot|jpg|png)/, loaders: "url-loader?limit=10240"},
-        ],
-        noParse: /(angular-resource\.min|bootstrap\.min)\.js/
+        ]
     },
     plugins: [
-        new webpack.optimize.CommonsChunkPlugin({
-            names: ["vendor"],
-            minChunks: Infinity
-        }),
+        new CopyWebpackPlugin(copyList),
         new ExtractTextPlugin("[name].bundle.css"),
+        new HtmlWebpackPlugin({
+            template: angular.app.index // 源文件位置
+        }),
+        new AddAssetsFilesToHtml()
     ],
     output: {
         filename: '[name].bundle.js',
-        publicPath: './dist/',
-        path: './dist'
+        path: angular.app.outDir
     }
 };
+
+function AddAssetsFilesToHtml() {
+}
+
+AddAssetsFilesToHtml.prototype.apply = function (compiler) {
+    // ...
+    compiler.plugin('compilation', function (compilation) {
+        compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
+            if (Array.isArray(angular.app.scripts)) {
+                const arr = angular.app.scripts.map(function (file) {
+                    return libPath + path.basename(file);
+                });
+                htmlPluginData.assets.js = [].concat(arr, htmlPluginData.assets.js);
+            }
+            if (Array.isArray(angular.app.styles)) {
+                const arr = angular.app.styles.map(function (file) {
+                    return libPath + path.basename(file);
+                });
+                htmlPluginData.assets.css = [].concat(arr, htmlPluginData.assets.css);
+            }
+            callback(null, htmlPluginData);
+        });
+    });
+
+};
+
+function addToCopyList(list, to) {
+    if (Array.isArray(list)) {
+        list.forEach(function (file) {
+            copyList.push({from: file, to: to || libPath});
+        });
+    }
+}

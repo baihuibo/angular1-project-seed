@@ -1,7 +1,7 @@
 // Created by baihuibo on 16/8/30.
 import {module, forEach} from "angular";
 import {extend} from "jquery";
-import {IModule, InjectableOption, IComponentOptions, IDirectiveOption} from "annotation";
+import {IModule, InjectableOption, IComponentOptions, IDirectiveOption} from "core";
 
 export enum Names {
     component = 1,

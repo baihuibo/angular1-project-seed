@@ -1,5 +1,5 @@
 // Created by baihuibo on 2016/12/17.
-import {Router} from "annotation";
+import {Router} from "core";
 import {UserComponent} from "./user.component";
 
 export const UsersRouting: Router[] = [{

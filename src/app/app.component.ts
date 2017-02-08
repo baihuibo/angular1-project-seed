@@ -1,5 +1,5 @@
 // Created by baihuibo on 2016/12/15.
-import {Component} from "annotation";
+import {Component} from "core";
 
 @Component({
     selector: 'app',

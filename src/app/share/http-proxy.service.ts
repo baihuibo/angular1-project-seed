@@ -1,5 +1,5 @@
 // Created by baihuibo on 2017/1/3.
-import {Injectable} from "annotation";
+import {Injectable} from "core";
 import {coupling} from "../../properties";
 
 @Injectable({

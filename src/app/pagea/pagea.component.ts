@@ -1,5 +1,5 @@
 // Created by baihuibo on 2016/12/16.
-import {Component} from "annotation";
+import {Component} from "core";
 import {PageAService} from "./pagea.service";
 import {CoreService} from "../share/core.service";
 

@@ -1,6 +1,6 @@
 // Created by baihuibo on 2017/1/10.
 
-import {Component} from "annotation";
+import {Component} from "core";
 
 @Component({
     template: `

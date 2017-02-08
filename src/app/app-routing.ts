@@ -1,7 +1,7 @@
 // Created by baihuibo on 2016/12/17.
 import {PageAComponent} from "./pagea/pagea.component";
 import {PageBComponent} from "./pageb/pageb.component";
-import {Router} from "annotation";
+import {Router} from "core";
 
 export const AppRouting: Router[] = [{
     url: '/pagea',
@@ -10,7 +10,14 @@ export const AppRouting: Router[] = [{
 }, {
     url: '/pageb',
     name: 'pageb',
-    component: PageBComponent
+    component: PageBComponent,
+    onEnter: class {
+        static $inject = ['$state'];
+
+        constructor($state) {
+            return false;
+        }
+    }
 }];
 
 export class DefaultRoutingConfig {

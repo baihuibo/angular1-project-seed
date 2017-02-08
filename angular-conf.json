@@ -1,0 +1,23 @@
+{
+  "app": {
+    "root": "./src",
+    "outDir": "./dist",
+    "main": "./main.ts",
+    "index": "./index.html",
+    "assets": [
+      "assets"
+    ],
+    "styles": [
+      "../node_modules/bootstrap/dist/css/bootstrap.min.css"
+    ],
+    "scripts": [
+      "../node_modules/core-js/client/core.min.js",
+      "../node_modules/tslib/tslib.js",
+      "../node_modules/jquery/dist/jquery.min.js",
+      "../node_modules/bootstrap/dist/js/bootstrap.min.js",
+      "../node_modules/angular/angular.min.js",
+      "../node_modules/angular-ui-router/release/angular-ui-router.min.js",
+      "../node_modules/angular-resource/angular-resource.min.js"
+    ]
+  }
+}
