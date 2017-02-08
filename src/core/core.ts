@@ -1,5 +1,5 @@
 // Created by baihuibo on 16/8/30.
-import {module, forEach} from "angular";
+import {module, forEach, copy} from "angular";
 import {IModule, InjectableOption, IComponentOptions, IDirectiveOption, Router, PipeTransform, CanActivate} from "core";
 
 export enum Names {
@@ -182,9 +182,7 @@ function bindings_proxy(name, symbol) {
 
 function setMetaData(classes, option, names: Names) {
     classes[names] = classes[names] || {};
-    if (option) {
-        Object.assign(classes[names], option);
-    }
+    option && extend(classes[names], option);
 }
 
 // 串转驼峰 (aaa-test) => (aaaTest)
@@ -199,4 +197,17 @@ function fnCamelCaseReplace(all, letter) {
 let id = 0;
 function nextId() {
     return ++id;
+}
+
+// 深度copy
+function extend(obj, deep) {
+    for (const key in deep) {
+        const target = deep[key];
+        if (typeof target === 'object') {
+            obj[key] = obj[key] || target.constructor();
+            extend(obj[key], target);
+        } else {
+            obj[key] = target;
+        }
+    }
 }

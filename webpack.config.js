@@ -91,24 +91,9 @@ AddAssetsFilesToHtml.prototype.apply = function (compiler) {
     // ...
     compiler.plugin('compilation', function (compilation) {
         compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
-            if (Array.isArray(angular.app.scripts)) {
-                const arr = angular.app.scripts.map(function (file) {
-                    return libPath + path.basename(file);
-                });
-                htmlPluginData.assets.js = [].concat(arr, htmlPluginData.assets.js);
-            }
-
-            const bases = baseScript.map(function (file) {
-                return libPath + path.basename(file);
-            });
-            htmlPluginData.assets.js = [].concat(bases, htmlPluginData.assets.js);
-
-            if (Array.isArray(angular.app.styles)) {
-                const arr = angular.app.styles.map(function (file) {
-                    return libPath + path.basename(file);
-                });
-                htmlPluginData.assets.css = [].concat(arr, htmlPluginData.assets.css);
-            }
+            addToBeforeList(baseScript, htmlPluginData.assets, 'js');
+            addToBeforeList(angular.app.scripts, htmlPluginData.assets, 'js');
+            addToBeforeList(angular.app.styles, htmlPluginData.assets, 'css');
 
             callback(null, htmlPluginData);
         });
@@ -121,5 +106,14 @@ function addToCopyList(list, to) {
         list.forEach(function (file) {
             copyList.push({from: file, to: to || libPath});
         });
+    }
+}
+
+function addToBeforeList(list, assets, key) {
+    if (Array.isArray(list)) {
+        const arr = list.map(function (file) {
+            return libPath + path.basename(file);
+        });
+        assets[key] = [].concat(arr, assets[key]);
     }
 }

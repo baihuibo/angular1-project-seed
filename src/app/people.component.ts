@@ -5,12 +5,11 @@ import {AppComponent} from "./app.component";
 @Component({
     selector: 'app-people',
     template: `
-        <dl ng-click="ctrl.peopleClick({$event:11})">
-            <dt>name : {{ctrl.people.name}}</dt>
-            <dd>age : {{ctrl.people.age}}</dd>
+        <dl ng-click="$ctrl.peopleClick({$event:11})">
+            <dt>name : {{$ctrl.people.name}}</dt>
+            <dd>age : {{$ctrl.people.age}}</dd>
         </dl>
-    `,
-    controllerAs: 'ctrl'
+    `
 })
 export class PeopleComponent {
     static $inject = ['$log'];
@@ -26,6 +25,7 @@ export class PeopleComponent {
     @Require('^app') appCtrl: AppComponent;
 
     $onInit() {
-        this.$log.log('people component :', this.appCtrl);
+        this.$log.log('people', this.people);
+        this.$log.log('people component $onInit :', this.appCtrl);
     }
 }

@@ -11,7 +11,11 @@
 <ui-view></ui-view>
 
 <app-people
-        people="people"
         people-click="$ctrl.peopleClick($event)"
+        people="people"
         ng-repeat="people in $ctrl.peopleList">
 </app-people>
+
+<ul>
+    <li ng-repeat="people in $ctrl.peopleList">{{people}}</li>
+</ul>
