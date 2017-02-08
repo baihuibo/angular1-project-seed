@@ -8,7 +8,13 @@ const angular = require('./angular-conf.json');
 
 const copyList = [];
 const libPath = 'libs/';
+const baseScript = [
+    path.resolve(__dirname, "node_modules/core-js/client/core.min.js"),
+    path.resolve(__dirname, "node_modules/tslib/tslib.js"),
+    path.resolve(__dirname, "node_modules/angular/angular.min.js")
+];
 
+addToCopyList(baseScript);
 addToCopyList(angular.app.scripts);
 addToCopyList(angular.app.styles);
 addToCopyList(angular.app.assets, "assets");
@@ -78,12 +84,19 @@ AddAssetsFilesToHtml.prototype.apply = function (compiler) {
                 });
                 htmlPluginData.assets.js = [].concat(arr, htmlPluginData.assets.js);
             }
+
+            const bases = baseScript.map(function (file) {
+                return libPath + path.basename(file);
+            });
+            htmlPluginData.assets.js = [].concat(bases, htmlPluginData.assets.js);
+
             if (Array.isArray(angular.app.styles)) {
                 const arr = angular.app.styles.map(function (file) {
                     return libPath + path.basename(file);
                 });
                 htmlPluginData.assets.css = [].concat(arr, htmlPluginData.assets.css);
             }
+
             callback(null, htmlPluginData);
         });
     });
