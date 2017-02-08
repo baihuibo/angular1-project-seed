@@ -181,8 +181,7 @@ function bindings_proxy(name, symbol) {
 }
 
 function setMetaData(classes, option, names: Names) {
-    classes[names] = classes[names] || {};
-    merge(classes[names], option);
+    classes[names] = merge(classes[names] || {}, option);
 }
 
 // 串转驼峰 (aaa-test) => (aaaTest)
