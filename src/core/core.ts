@@ -1,6 +1,8 @@
 // Created by baihuibo on 16/8/30.
 import {module, forEach} from "angular";
 import {IModule, InjectableOption, IComponentOptions, IDirectiveOption} from "core";
+import {Router} from "core";
+import {CanActivate} from "core";
 
 export enum Names {
     component = 1,
@@ -59,6 +61,7 @@ export function NgModule(option: IModule) {
         registerProviders(option.pipes, 'filter', Names.injectable);
         registerProviders(option.directives, 'directive', Names.directive);
         registerProviders(option.configs, 'config');
+        registerProviders(option.runs, 'run');
         registerRouter(option.routers);
         registerComponents(option.components);
 
@@ -93,8 +96,22 @@ export function NgModule(option: IModule) {
                 }]);
             });
 
-            function register(state, $stateProvider) {
-                $stateProvider.state(state.name, state);
+            function register(router: Router, $stateProvider) {
+                if (router.canActivate) {
+                    router.onEnter = function ($injector: angular.auto.IInjectorService) {
+                        let result;
+                        if (router.canActivate) {
+                            router.canActivate.forEach(function (guard) {
+                                const instance: CanActivate = <any>$injector.instantiate(guard);
+                                result = result || instance.canActivate();
+                            });
+                        }
+                        return result;
+                    };
+                    console.log(router);
+                    router.onEnter['$inject'] = ['$injector'];
+                }
+                $stateProvider.state(router.name, router);
             }
         }
 
@@ -150,7 +167,7 @@ function bindings_proxy(name, symbol) {
 function setMetaData(classes, option, names: Names) {
     classes[names] = classes[names] || {};
     if (option) {
-        Object.assign(classes[names] , option);
+        Object.assign(classes[names], option);
     }
 }
 

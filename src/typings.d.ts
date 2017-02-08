@@ -69,8 +69,17 @@ declare module "core" {
         services?: any[] // 服务提供
         providers?: any[] // 服务提供
         configs?: any[] // 模块配置
+        runs?: any[] // 运行时模块
         pipes?: any[] // 过滤器 filter服务支持
         bootstrap?: any[]
+    }
+
+    interface CanActivate {
+        canActivate();
+    }
+
+    interface CanActivateChild {
+        canActivateChild();
     }
 
     interface InjectableOption {
@@ -92,6 +101,11 @@ declare module "core" {
         params?: any;
         views?: {[name: string]: Router};
         abstract?: boolean;
+
+        canActivate?: Array<Function>;
+        canActivateChild?: Function;
+        CanDeactivate?: Function;
+
         onEnter?: Function | Array<string | Function>;
         onExit?: Function | Array<string | Function>;
         data?: any;

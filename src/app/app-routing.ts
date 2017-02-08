@@ -1,6 +1,7 @@
 // Created by baihuibo on 2016/12/17.
 import {PageAComponent} from "./pagea/pagea.component";
 import {PageBComponent} from "./pageb/pageb.component";
+import {PageAGuard} from "./pagea/pagea.guard";
 import {Router} from "core";
 
 export const AppRouting: Router[] = [{
@@ -11,13 +12,7 @@ export const AppRouting: Router[] = [{
     url: '/pageb',
     name: 'pageb',
     component: PageBComponent,
-    onEnter: class {
-        static $inject = ['$state'];
-
-        constructor($state) {
-            return false;
-        }
-    }
+    canActivate: [PageAGuard]
 }];
 
 export class DefaultRoutingConfig {

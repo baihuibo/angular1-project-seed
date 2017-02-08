@@ -6,8 +6,6 @@ import {Component} from "core";
     template: require('./app.component.html')
 })
 export class AppComponent {
-    static $inject = [];
-
     peopleList = [{
         name: 'xiaobai',
         age: 11
@@ -16,7 +14,13 @@ export class AppComponent {
         age: 13
     }];
 
+    static $inject = ['$log'];
+
+    constructor(private $log:angular.ILogService) {
+
+    }
+
     peopleClick(peopleReturnValue) {
-        console.log('clicked', peopleReturnValue);
+        this.$log.log('clicked', peopleReturnValue);
     }
 }

@@ -13,7 +13,11 @@ import {AppComponent} from "./app.component";
     controllerAs: 'ctrl'
 })
 export class PeopleComponent {
-    static $inject = [];
+    static $inject = ['$log'];
+
+    constructor(private $log: angular.ILogService) {
+
+    }
 
     @Input() people;
 
@@ -22,6 +26,6 @@ export class PeopleComponent {
     @Require('^app') appCtrl: AppComponent;
 
     $onInit() {
-        console.log('people component :', this.appCtrl);
+        this.$log.log('people component :', this.appCtrl);
     }
 }

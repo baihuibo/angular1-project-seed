@@ -6,23 +6,31 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const angular = require('./angular-conf.json');
 
+const PROD_MODE = /prod|production/i.test(process.env['ENV_WEBPACK']);
+
 const copyList = [];
 const libPath = 'libs/';
-const baseScript = [
-    path.resolve(__dirname, "node_modules/core-js/client/core.min.js"),
+const extensions = ['.ts', '.js', '.json', '.html'];
+
+let baseScript = [
+    path.resolve(__dirname, "node_modules/core-js/client/core.js"),
     path.resolve(__dirname, "node_modules/tslib/tslib.js"),
-    path.resolve(__dirname, "node_modules/angular/angular.min.js")
+    path.resolve(__dirname, "node_modules/angular/angular.js")
 ];
+
+if (PROD_MODE) {
+    baseScript = [
+        path.resolve(__dirname, "node_modules/core-js/client/core.min.js"),
+        path.resolve(__dirname, "node_modules/tslib/tslib.js"),
+        path.resolve(__dirname, "node_modules/angular/angular.min.js")
+    ];
+    extensions.unshift('.prod.ts');
+}
 
 addToCopyList(baseScript);
 addToCopyList(angular.app.scripts);
 addToCopyList(angular.app.styles);
 addToCopyList(angular.app.assets, "assets");
-
-const extensions = ['.ts', '.js', '.json', '.html'];
-if (/prod|production/i.test(process.env['ENV_WEBPACK'])) {
-    extensions.unshift('.prod.ts');
-}
 
 module.exports = {
     context: path.resolve(__dirname, angular.app.root),
