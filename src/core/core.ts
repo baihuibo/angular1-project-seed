@@ -164,10 +164,11 @@ export function Output(name?: string) {
     return bindings_proxy(name, '&');
 }
 
-export function Require(require: string) {
+export function ViewParent(comp: Function) {
     return function (target, key) {
+        const compOption: IComponentOptions = comp[Names.component];
         setMetaData(target.constructor, {
-            require: {[key]: require}
+            require: {[key]: '?^' + compOption.selector}
         }, Names.component);
     }
 }

@@ -1,5 +1,5 @@
 // Created by baihuibo on 2016/12/22.
-import {Component, Input, Output, Require} from "core";
+import {Component, Input, Output, ViewParent} from "core";
 import {AppComponent} from "./app.component";
 
 @Component({
@@ -15,17 +15,20 @@ export class PeopleComponent {
     static $inject = ['$log'];
 
     constructor(private $log: angular.ILogService) {
-
     }
 
-    @Input() people;
+    private _obj;
+
+    @Input() set people(obj) {
+        console.log('people', obj);
+        this._obj = obj;
+    };
+
+    get people() {
+        return this._obj;
+    }
 
     @Output() peopleClick: Function;
 
-    @Require('^app') appCtrl: AppComponent;
-
-    $onInit() {
-        this.$log.log('people', this.people);
-        this.$log.log('people component $onInit :', this.appCtrl);
-    }
+    @ViewParent(AppComponent) appCtrl: AppComponent;
 }

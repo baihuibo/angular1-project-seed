@@ -29,7 +29,7 @@ declare module "core" {
 
     export function Output(name?: string);
 
-    export function Require(require?: string);
+    export function ViewParent(comp: Function);
 
     interface IComponentOptions {
         selector?: string
