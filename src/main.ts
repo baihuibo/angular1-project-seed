@@ -5,7 +5,7 @@
 //  [name].[type].[html,css,js,ts]
 // type = [component , module , service , pipe , directive , interceptor , guard , config]
 
-import {RootModule} from "./root.module";
+import {AppModule} from "./app/app.module";
 import {bootstrapModule} from "./core/browser-bootstrap";
 
-bootstrapModule(RootModule);
+bootstrapModule(AppModule);

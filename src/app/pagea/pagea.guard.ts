@@ -10,7 +10,7 @@ export class PageAGuard implements CanActivate {
     }
 
     canActivate() {
-        this.$log.log('不允许激活');
-        return false;
+        // this.$log.log('不允许激活');
+        // return false;
     }
 }

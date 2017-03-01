@@ -6,11 +6,11 @@ export class HttpConfig {
 
     constructor($httpProvider: angular.IHttpProvider) {
         // 缓存处理器
-        $httpProvider.interceptors.push('HttpCacheInterceptor');
+        $httpProvider.interceptors.push('HttpCacheService');
 
         if (!environment.production) {
             // 开发模式的请求拦截器
-            $httpProvider.interceptors.push('HttpDevProxyInterceptor');
+            $httpProvider.interceptors.push('HttpDevProxyService');
         }
     }
 }

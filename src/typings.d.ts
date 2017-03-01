@@ -31,6 +31,9 @@ declare module "core" {
 
     export function ViewParent(comp: Function);
 
+    /**
+     * 组件配置
+     */
     interface IComponentOptions {
         selector?: string
         controller?: string | Injectable<any>;
@@ -42,6 +45,9 @@ declare module "core" {
         require?: {[controller: string]: string};
     }
 
+    /**
+     * 指令配置
+     */
     interface IDirectiveOption {
         selector: string
         compile?: IDirectiveCompileFn;
@@ -62,6 +68,9 @@ declare module "core" {
         transclude?: boolean | 'element' | {[slot: string]: string};
     }
 
+    /**
+     * 模块配置
+     */
     interface IModule {
         name?: string // 模块名称
         imports?: any[] // 导入模块
@@ -76,22 +85,50 @@ declare module "core" {
         bootstrap?: any[]
     }
 
+    /**
+     * 决定路由器是否允许激活
+     */
     interface CanActivate {
         canActivate();
     }
 
+    /**
+     * 是否允许激活子路由
+     */
     interface CanActivateChild {
         canActivateChild();
     }
 
+    /** 可允许注入的name参数 */
     interface InjectableOption {
         name: string
     }
 
+    /**
+     * 管道接口
+     * @example
+     *
+     * ```ts
+     * @Pipe({name : 'test'})
+     * class TestPipe implements PipeTransform{
+     *      transform(value){
+     *          return value + '!!!';
+     *      }
+     * }
+     * ```
+     *
+     * ```html
+     * {{ 'hello word' | test}}
+     * ```
+     *
+     */
     interface PipeTransform {
         transform(value: any, ...args: any[]): any
     }
 
+    /**
+     * 路由配置
+     */
     interface Router {
         name?: string;
         template?: string | {(params: IStateParamsService): string};

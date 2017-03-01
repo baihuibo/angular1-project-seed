@@ -3,9 +3,9 @@
 import {Injectable} from "core";
 
 @Injectable({
-    name: 'HttpCacheInterceptor'
+    name: 'HttpCacheService'
 })
-export class HttpCacheInterceptor {
+export class HttpCacheService {
     static $inject = ['$log'];
 
     constructor(private $log: angular.ILogService) {

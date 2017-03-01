@@ -3,9 +3,9 @@
 import {Injectable} from "core";
 
 @Injectable({
-    name: 'HttpDevProxyInterceptor'
+    name: 'HttpDevProxyService'
 })
-export class HttpDevProxyInterceptor {
+export class HttpDevProxyService {
     static $inject = ['$log'];
 
     constructor(private $log: angular.ILogService) {
@@ -13,8 +13,8 @@ export class HttpDevProxyInterceptor {
     }
 
     request(request: angular.IRequestConfig) {
-        request.method = 'get';
-        request.url = `assets/api/${request.url}.json`;
+        request.method = 'get';// 不管是何种方式的访问请求，全部设置为 GET 方式
+        request.url = `assets/api/${request.url}.json`; // 将资源地址指向本地的.json文件
         return request;
     }
 }

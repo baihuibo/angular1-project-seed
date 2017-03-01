@@ -10,10 +10,28 @@ export enum Names {
     pipe = 5
 }
 
+let globalTimer: number;
+function globalDigest() {// 触发全局的值检查
+    clearTimeout(globalTimer);
+    globalTimer = setTimeout(function () {
+        $(document)['scope']().$digest();
+    }, 1);
+}
+
 export function Component(option: IComponentOptions): any {
     return function (classes) {
         option.selector = option.selector ? strandToCamel(option.selector.trim()) : 'component' + nextId();
         option.controller = classes;
+        let {prototype} = classes;
+        if (prototype.$onInit) {
+            let old = prototype.$onInit;
+            prototype.$onInit = function () {
+                setImmediate(() => {
+                    old.call(this);
+                    globalDigest();
+                });
+            };
+        }
         setMetaData(classes, option, Names.component);
     }
 }
@@ -24,7 +42,7 @@ export function Directive(option: IDirectiveOption) {
 
         const first = selector[0];
 
-        if (first == '[') {// attr
+        if (first == '[' && selector.slice(-1) == ']') {// attr
             selector = selector.slice(1, -1);
             option.restrict = 'A';
         } else if (first == '.') {// class

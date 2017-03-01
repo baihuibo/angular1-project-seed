@@ -20,7 +20,7 @@ export class PeopleComponent {
     private _obj;
 
     @Input() set people(obj) {
-        console.log('people', obj);
+        console.log('[peopleComponent]: people', obj);
         this._obj = obj;
     };
 

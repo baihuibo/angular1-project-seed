@@ -13,15 +13,15 @@ import {GradientBComponent} from "./pageb/gradient/gradient.component";
 
 import {PageAService} from "./pagea/pagea.service";
 import {TestDirective} from "./pagea/test.directive";
-import {HttpDevProxyInterceptor} from "../core/http-dev-proxy.interceptor";
+import {HttpDevProxyService} from "../core/http-dev-proxy.service";
 import {HttpConfig} from "./http.config";
-import {HttpCacheInterceptor} from "../core/http-cache.interceptor";
+import {HttpCacheService} from "../core/http-cache.service";
 import {StatePipe} from "./pagea/state.pipe";
 
 @NgModule({
     imports: [ShareModule, UsersModule],
     components: [PageAComponent, PageBComponent, AppComponent, PeopleComponent, GradientBComponent],
-    services: [PageAService, HttpDevProxyInterceptor, HttpCacheInterceptor],
+    services: [PageAService, HttpDevProxyService, HttpCacheService],
     directives: [TestDirective],
     pipes: [StatePipe],
     routers: [AppRouting],

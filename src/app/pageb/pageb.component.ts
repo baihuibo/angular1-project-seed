@@ -1,15 +1,13 @@
 // Created by baihuibo on 2016/12/16.
 import {Component} from "core";
-import {CoreService} from "../share/core.service";
 
 @Component({
-    selector: '',
     template: require('./pageb.component.html')
 })
 export class PageBComponent {
-    static $inject = ['$state', 'CoreService', '$log'];
+    static $inject = ['$state', '$log'];
 
-    constructor($state: angular.ui.IStateService, core: CoreService, $log: angular.ILogService) {
+    constructor($state: angular.ui.IStateService, $log: angular.ILogService) {
 
     }
 
