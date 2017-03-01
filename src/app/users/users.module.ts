@@ -2,7 +2,7 @@
 
 import {NgModule} from "core";
 import {ShareModule} from "../share/share.module";
-import {UsersRoutingModule} from "./users-routing";
+import {UsersRoutingModule} from "./users-routing.module";
 
 import {UserComponent} from "./user.component";
 import {UsersService} from "./users.service";

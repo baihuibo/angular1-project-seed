@@ -8,26 +8,23 @@ import {PageAGuard} from "./pagea/pagea.guard";
 const configs: IRouter[] = [{
     url: '/pagea',
     name: 'pagea',
-    component: PageAComponent
+    component: PageAComponent,
+    canActivate: [PageAGuard]
 }, {
     url: '/pageb',
     name: 'pageb',
-    component: PageBComponent,
-    canActivate: [PageAGuard]
+    component: PageBComponent
+}, {
+    url: '',
+    redirectTo: '/pagea',
+
+}, {
+    url: '**',
+    redirectTo: '/pagea'
 }];
 
-export class DefaultRoutingConfig {
-    static $inject = ['$urlRouterProvider'];
-
-    constructor($urlRouterProvider: angular.ui.IUrlRouterProvider) {
-        $urlRouterProvider.when('', '/pagea');
-        $urlRouterProvider.otherwise('/pagea');
-    }
-}
-
 @NgModule({
-    imports: [RouterModule.forRoot(configs)],
-    configs: [DefaultRoutingConfig]
+    imports: [RouterModule.forRoot(configs)]
 })
 export class AppRoutingModule {
 }

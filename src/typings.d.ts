@@ -23,6 +23,7 @@ declare module "router" {
         parent?: string | IRouter;
         resolve?: {[name: string]: any};
         url?: string | angular.ui.IUrlMatcher;
+        redirectTo?: string | Function | any[];
         params?: any;
         views?: {[name: string]: IRouter};
         abstract?: boolean;

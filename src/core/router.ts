@@ -8,15 +8,18 @@ import "angular-ui-router";
 
 export module RouterModule {
     export function forRoot(routers: IRouter[]) {
-        return getModule(class {
-            static $inject = ['$stateProvider'];
+        return getModule(class RouterRegister {
+            static $inject = ['$stateProvider', '$urlRouterProvider'];
 
-            constructor($stateProvider) {
+            constructor($stateProvider: angular.ui.IStateProvider,
+                        $urlRouterProvider: angular.ui.IUrlRouterProvider) {
                 routers.forEach(router => {
                     if (Array.isArray(router)) {
-                        router.forEach(state => register(fromState(state), $stateProvider));
+                        (<Array<IRouter>>router).forEach(state => register(fromState(state), $stateProvider));
                     } else if (router.name) {
                         register(fromState(router), $stateProvider);
+                    } else {
+                        registerRouterProvider(router, $urlRouterProvider);
                     }
                 })
             }
@@ -25,6 +28,14 @@ export module RouterModule {
 
     export function forChild(routers: IRouter[]) {
         return forRoot(routers);
+    }
+}
+
+function registerRouterProvider(router: IRouter, $urlRouterProvider) {
+    if (router.url == '**' && router.redirectTo) {// 无效的路由
+        $urlRouterProvider.otherwise(router.redirectTo);
+    } else if (router.url === '' && router.redirectTo) {// 默认路由
+        $urlRouterProvider.when('', router.redirectTo);
     }
 }
 
@@ -48,11 +59,9 @@ function register(router: IRouter, $stateProvider) {
 function fromState(state: IRouter) {
     state.component && transformCompToString(state);
 
-    if (state.views) {
-        forEach(state.views, function (view: angular.ui.IState, key) {
-            view.component && transformCompToString(view);
-        });
-    }
+    state.views && forEach(state.views, function (view: IRouter, key) {
+        view.component && transformCompToString(view);
+    });
 
     return state;
 }
@@ -64,8 +73,8 @@ function transformCompToString(state: IRouter) {
 }
 
 function getModule(config) {
-    class UiRouterDefaultErrorHandlerConfig {
-        static $inject = ['$state'];
+    class ErrorHandlerOverwrite {
+        static $inject = ['$state', '$log'];
 
         constructor($state: angular.ui.IStateService) {
             $state['defaultErrorHandler'](() => {
@@ -75,7 +84,8 @@ function getModule(config) {
 
     @NgModule({
         imports: ['ui.router'],
-        configs: [config]
+        configs: [config],
+        runs: [ErrorHandlerOverwrite]
     })
     class Module {
     }

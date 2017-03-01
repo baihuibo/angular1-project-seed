@@ -82,7 +82,7 @@ export function Pipe(option: InjectableOption) {
 
 export function NgModule(option: IModule) {
     return function (classes) {
-        classes[Names.module] = option.name || "module" + nextId();
+        classes[Names.module] = option.name || `ng_module_${classes.name}_${nextId()}`;
         const mod = module(classes[Names.module], transformImports(option.imports || []));
 
         registerProviders(option.providers, 'service', Names.injectable);
@@ -92,7 +92,7 @@ export function NgModule(option: IModule) {
         registerDeclarations(option.declarations);
 
         function registerDeclarations(list: any[]) {
-            list && list.forEach(item => {
+            list && list.filter(filterEmptyItem).forEach(item => {
                 const pipe = item[Names.pipe];
                 const component: IComponentOptions = item[Names.component];
                 const directive = item[Names.directive];
@@ -111,7 +111,7 @@ export function NgModule(option: IModule) {
         }
 
         function transformImports(imports: any[]) {
-            return imports.filter(i => !!i).map(module => {
+            return imports.filter(filterEmptyItem).map(module => {
                 if (typeof module === 'string') {
                     return module;
                 }
@@ -120,7 +120,7 @@ export function NgModule(option: IModule) {
         }
 
         function registerProviders(items: any[], method: string, names?: Names) {
-            items && items.forEach(item => mod[method](names ? item[names] : item));
+            items && items.filter(filterEmptyItem).forEach(item => mod[method](names ? item[names] : item));
         }
     }
 }
@@ -171,4 +171,8 @@ function fnCamelCaseReplace(all, letter) {
 let id = 0;
 function nextId() {
     return ++id;
+}
+
+function filterEmptyItem(i) {
+    return !!i;
 }
