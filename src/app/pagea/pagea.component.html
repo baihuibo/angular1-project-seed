@@ -5,6 +5,8 @@
 user = {{$ctrl.user}}
 
 
-{{'baihuibo' | states :1}}
+{{'baihuibo' | state :1}}
 
-<div test>test directive</div>
+{{div.innerHTML}}
+
+<div test #="div">test directive <br> hello</div>

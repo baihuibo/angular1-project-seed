@@ -3,7 +3,7 @@
 import {Pipe, PipeTransform} from "core";
 
 @Pipe({
-    name: "states"
+    name: "state"
 })
 export class StatePipe implements PipeTransform {
 
