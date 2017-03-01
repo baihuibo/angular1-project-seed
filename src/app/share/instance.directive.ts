@@ -1,6 +1,6 @@
 // Created by baihuibo on 2017/3/1.
 
-import {Directive} from "core";
+import {Directive, strandToCamel} from "core";
 
 /**
  * 绑定组件实例化对象
@@ -33,17 +33,10 @@ export class InstanceDirective {
     static $inject = ['$element', '$scope', '$attrs', '$parse'];
 
     constructor($el, $scope, $attrs, $parse) {
-        const name = InstanceDirective.camelCase($el[0].localName);
-
         if ($attrs['#']) {
             const assign = $parse($attrs['#']).assign;
+            const name = strandToCamel($el[0].localName);
             assign($scope, $el.data(`$${name}Controller`) || $el[0]);
         }
-    }
-
-    static camelCase(str) {
-        return str.replace(/-(\w)/g, function ($0, $1) {
-            return $1.toUpperCase();
-        });
     }
 }

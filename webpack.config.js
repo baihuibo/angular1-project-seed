@@ -40,7 +40,8 @@ module.exports = {
     resolve: {
         extensions: extensions,
         alias: {
-            'core$': path.resolve(__dirname, "src/core/core.ts")
+            'core$': path.resolve(__dirname, "src/core/core.ts"),
+            'router$': path.resolve(__dirname, "src/core/router.ts")
         }
     },
     externals: {

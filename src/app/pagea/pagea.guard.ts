@@ -1,5 +1,5 @@
 // Created by baihuibo on 2017/2/8.
-import {CanActivate} from "core";
+import {CanActivate} from "router";
 
 export class PageAGuard implements CanActivate {
 

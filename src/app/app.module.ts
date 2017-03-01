@@ -3,7 +3,7 @@ import {NgModule} from "core";
 import {ShareModule} from "./share/share.module";
 import {UsersModule} from "./users/users.module";
 
-import {DefaultRoutingConfig, AppRouting} from "./app-routing";
+import {AppRoutingModule} from "./app-routing.module";
 
 import {PageAComponent} from "./pagea/pagea.component";
 import {PageBComponent} from "./pageb/pageb.component";
@@ -19,13 +19,14 @@ import {HttpCacheService} from "../core/http-cache.service";
 import {StatePipe} from "./pagea/state.pipe";
 
 @NgModule({
-    imports: [ShareModule, UsersModule],
-    components: [PageAComponent, PageBComponent, AppComponent, PeopleComponent, GradientBComponent],
-    services: [PageAService, HttpDevProxyService, HttpCacheService],
-    directives: [TestDirective],
-    pipes: [StatePipe],
-    routers: [AppRouting],
-    configs: [DefaultRoutingConfig, HttpConfig],
+    imports: [ShareModule, UsersModule, AppRoutingModule],
+    providers: [PageAService, HttpDevProxyService, HttpCacheService],
+    configs: [HttpConfig],
+    declarations: [
+        PageAComponent, PageBComponent, AppComponent,
+        PeopleComponent, GradientBComponent,
+        TestDirective, StatePipe
+    ]
 })
 export class AppModule {
 

@@ -1,6 +1,12 @@
 // Created by baihuibo on 16/8/30.
 import {module, forEach, merge} from "angular";
-import {IModule, InjectableOption, IComponentOptions, IDirectiveOption, Router, PipeTransform, CanActivate} from "core";
+import {
+    IModule,
+    InjectableOption,
+    IComponentOptions,
+    IDirectiveOption,
+    PipeTransform
+} from "core";
 
 export enum Names {
     component = 1,
@@ -79,92 +85,42 @@ export function NgModule(option: IModule) {
         classes[Names.module] = option.name || "module" + nextId();
         const mod = module(classes[Names.module], transformImports(option.imports || []));
 
-        registerProviders(option.providers, 'provider', Names.injectable);
-        registerProviders(option.services, 'service', Names.injectable);
-        registerProviders(option.directives, 'directive', Names.directive);
+        registerProviders(option.providers, 'service', Names.injectable);
         registerProviders(option.configs, 'config');
         registerProviders(option.runs, 'run');
-        registerRouter(option.routers);
-        registerComponents(option.components);
-        registerPipe(option.pipes);
 
-        function transformImports(imports: any[]) {
-            return imports.map(module => {
-                if (typeof module === 'string') {
-                    return module;
+        registerDeclarations(option.declarations);
+
+        function registerDeclarations(list: any[]) {
+            list && list.forEach(item => {
+                const pipe = item[Names.pipe];
+                const component: IComponentOptions = item[Names.component];
+                const directive = item[Names.directive];
+                if (pipe) {
+                    mod.filter(pipe.name, ['$injector', function ($injector) {
+                        const instance: PipeTransform = $injector.instantiate(item);
+                        return function (value, ...args) {
+                            return instance.transform(value, ...args);
+                        }
+                    }]);
+                } else {
+                    component && mod.component(component.selector, component);
+                    directive && mod.directive(directive);
                 }
-                return module[Names.module] || module.name;
             });
         }
 
-        function registerComponents(comps: any[]) {
-            comps && comps.forEach(comp => {
-                const option: IComponentOptions = comp[Names.component];
-                mod.component(option.selector, option);
+        function transformImports(imports: any[]) {
+            return imports.filter(i => !!i).map(module => {
+                if (typeof module === 'string') {
+                    return module;
+                }
+                return module[Names.module] || module.name || 'ng';
             });
         }
 
         function registerProviders(items: any[], method: string, names?: Names) {
             items && items.forEach(item => mod[method](names ? item[names] : item));
-        }
-
-        function registerPipe(pipes: any[]) {
-            pipes && pipes.forEach(pipe => {
-                const option: InjectableOption = pipe[Names.pipe];
-                mod.filter(option.name, ['$injector', function ($injector: angular.auto.IInjectorService) {
-                    const instance: PipeTransform = <any>$injector.instantiate(pipe);
-                    return function (value, ...args) {
-                        return instance.transform(value, ...args);
-                    }
-                }]);
-            });
-        }
-
-        function registerRouter(routers: any[]) {
-            routers && routers.forEach(router => {
-                mod.config(['$stateProvider', function ($stateProvider) {
-                    if (Array.isArray(router)) {
-                        router.forEach(state => register(fromState(state), $stateProvider));
-                    } else if (router.name) {
-                        register(fromState(router), $stateProvider);
-                    }
-                }]);
-            });
-
-            function register(router: Router, $stateProvider) {
-                if (router.canActivate) {
-                    router.onEnter = function ($injector: angular.auto.IInjectorService) {
-                        let result;
-                        if (router.canActivate) {
-                            router.canActivate.forEach(function (guard) {
-                                const instance: CanActivate = <any>$injector.instantiate(guard);
-                                result = result || instance.canActivate();
-                            });
-                        }
-                        return result;
-                    };
-                    router.onEnter['$inject'] = ['$injector'];
-                }
-                $stateProvider.state(router.name, router);
-            }
-        }
-
-        function fromState(state: angular.ui.IState) {
-            state.component && transformCompToString(state);
-
-            if (state.views) {
-                forEach(state.views, function (view: angular.ui.IState, key) {
-                    view.component && transformCompToString(view);
-                });
-            }
-
-            return state;
-        }
-
-        function transformCompToString(state: angular.ui.IState) {
-            const comp = state.component;
-            const option: IComponentOptions = comp[Names.component];
-            state.component = option.selector || comp;
         }
     }
 }
@@ -204,7 +160,7 @@ function setMetaData(classes, option, names: Names) {
 }
 
 // 串转驼峰 (aaa-test) => (aaaTest)
-function strandToCamel(name: string) {
+export function strandToCamel(name: string) {
     return name.replace(/-([a-z])/g, fnCamelCaseReplace);
 }
 

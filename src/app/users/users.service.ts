@@ -21,7 +21,7 @@ export class UsersService {
     }
 
     queryAllUser() {
-        return copy(this.userList);
+        return Promise.resolve(copy(this.userList));
     }
 
     deleteUser(userId: string) {
