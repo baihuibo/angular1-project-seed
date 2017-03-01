@@ -1,6 +1,7 @@
 //Created by baihuibo on 2016/12/15.
 const path = require('path');
 const webpack = require('webpack');
+const remove = require('remove');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -31,6 +32,12 @@ addToCopyList(baseScript);
 addToCopyList(angular.app.scripts);
 addToCopyList(angular.app.styles);
 addToCopyList(angular.app.assets, "assets");
+
+/////// 删除输出目录文件
+try {
+    remove.removeAsync(angular.app.outDir);
+} catch (e) {
+}
 
 module.exports = {
     context: path.resolve(__dirname, angular.app.root),
@@ -99,7 +106,6 @@ AddAssetsFilesToHtml.prototype.apply = function (compiler) {
             callback(null, htmlPluginData);
         });
     });
-
 };
 
 function addToCopyList(list, to) {
