@@ -5,6 +5,7 @@ const del = require('del');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const StringReplaceWebpackPlugin = require('string-replace-webpack-plugin');
 const angular = require('./angular-conf.json');
 
 const PROD_MODE = /prod|production/i.test(process.env['ENV_WEBPACK']);
@@ -59,7 +60,34 @@ module.exports = {
     },
     module: {
         loaders: [
-            {test: /\.ts/, loaders: "ts-loader"},
+            {
+                test: /\.ts/,
+                loaders: StringReplaceWebpackPlugin.replace("ts-loader", {
+                    replacements: [
+                        {
+                            pattern: /loadChildren\s*\:\s*['"](.*)#(.*)['"]/g,
+                            replacement: function (match, file, moduleName, offset, string) {
+                                return `
+                                    loadChildren : (function(){
+                                      let promise; // 优化异步模块加载器
+                                      return function loadFn(){
+                                         if(promise) return promise;
+                                         
+                                          return promise = new Promise(function (resolve) {
+                                             require.ensure(["${file}"], function (require) {
+                                                 loadFn['asyncModuleRegister'](require("${file}"), '${moduleName}');
+                                                 resolve();
+                                             });
+                                          });
+                                      }
+                                    }()) ,
+                                `;
+                            }
+                        }
+                    ]
+                }),
+
+            },
             {test: /\.html/, loaders: "html-loader"},
             {
                 test: /\.css/,
@@ -81,6 +109,7 @@ module.exports = {
         ]
     },
     plugins: [
+        new StringReplaceWebpackPlugin(),
         new CopyWebpackPlugin(copyList),
         new ExtractTextPlugin(PROD_MODE ? '[name].[hash].css' : "[name].bundle.css"),
         new HtmlWebpackPlugin({

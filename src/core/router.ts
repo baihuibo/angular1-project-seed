@@ -1,20 +1,38 @@
 // Created by baihuibo on 2017/3/1.
 
 import {IRouter, CanActivate} from "router";
-import {Names, NgModule, IComponentOptions} from "core";
+import {Names, NgModule, IComponentOptions, strandToCamel} from "core";
+import {asyncModuleRegister} from "core";
 import {forEach} from "angular";
 import "angular-ui-router";
-import {strandToCamel} from "core";
 // import "ng-ui-router-state-events"; // 暂时不启用此插件
 
 export module RouterModule {
     export function forRoot(routers: IRouter[]) {
-        return getModule(class RouterRegister {
-            static $inject = ['$stateProvider', '$urlRouterProvider'];
+        const module = getModule(class RouterConfig {
+            static $inject = ['$stateProvider', '$urlRouterProvider', '$templateFactoryProvider'];
 
             constructor($stateProvider: angular.ui.IStateProvider,
-                        $urlRouterProvider: angular.ui.IUrlRouterProvider) {
+                        $urlRouterProvider: angular.ui.IUrlRouterProvider,
+                        $templateFactoryProvider) {
                 routers.forEach(router => {
+
+                    // console.log('$templateFactoryProvider', $templateFactoryProvider);
+
+                    if (router.resolve && router.resolve['loadChildren']) {
+                        const loadFn = router.resolve['loadChildren'];
+                        // router.templateProvider = function () {
+                        //     return new Promise(function (resolve) {
+                        //         console.log('template');
+                        //         resolve('<app-async-page></app-async-page>');
+                        //     });
+                        // };
+                        // 注入异步模块
+                        loadFn['asyncModuleRegister'] = function (esModule, moduleName) {
+                            asyncModuleRegister(module, esModule, moduleName);
+                        };
+                    }
+
                     if (Array.isArray(router)) {
                         (<Array<IRouter>>router).forEach(state => register(fromState(state), $stateProvider));
                     } else if (router.name) {
@@ -25,6 +43,8 @@ export module RouterModule {
                 })
             }
         });
+
+        return module;
     }
 
     export function forChild(routers: IRouter[]) {

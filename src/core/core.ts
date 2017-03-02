@@ -102,20 +102,27 @@ export function NgModule(option: IModule) {
                     $controllerProvider, $compileProvider, $filterProvider, $provide, $injector
                 };
 
-                console.log($controllerProvider);
+                const requires = mod.requires;
+
                 mod[NameMap.registerFn] = function registerFn(childModuleName) {
-                    const child = module(childModuleName);
+                    // 不要注入重复的模块
+                    if (!requires.includes(childModuleName)) {
+                        requires.push(childModuleName);
 
-                    if (!child[NameMap.done]) {
+                        const childModule = module(childModuleName);
+                        if (!childModule[NameMap.done]) {
+                            // 1 加载依赖模块
+                            childModule.requires.forEach(sub => registerFn(sub));
 
-                        startRegisterBlock(child['_invokeQueue']);
-                        startRegisterBlock(child['_configBlocks']);
+                            // 2 运行注册服务，组件，配置
+                            startRegisterBlock(childModule['_invokeQueue']);
+                            startRegisterBlock(childModule['_configBlocks']);
 
-                        child.requires.forEach(sub => registerFn(sub));
+                            // 3 运行初始化模块方法
+                            startRunsBlock(childModule['_runBlocks']);
 
-                        startRunsBlock(child['_runBlocks']);
-
-                        child[NameMap.done] = true;
+                            childModule[NameMap.done] = true;
+                        }
                     }
                 };
 
@@ -126,9 +133,30 @@ export function NgModule(option: IModule) {
                 }
 
                 function startRegisterBlock(queues) {
-                    queues.forEach(args => {// 向父模块注入所有服务，启动所有配置服务
-                        const provider = providers[args[0]];
-                        provider[args[1]].apply(provider, args[2]);
+                    queues.forEach(([register, method, args]) => {
+                        const provider = providers[register];
+                        const copyArgs = Array.from(args).slice();
+                        const suffix = method.charAt(0).toUpperCase() + method.slice(1);
+
+                        let [first] = copyArgs;
+                        if (Array.isArray(first)) {
+                            // config
+                        } else if (typeof first === 'string') {
+                            // component,directive,service,filter
+                            if ($injector.has(first + suffix)) {
+                                return; // 不注册重复的组件和服务
+                            }
+                        } else {
+                            // service , directive, filter
+                            for (let [key, value] of Object.entries(first)) {
+                                // 重复的组件不在注入父模块
+                                if ($injector.has(key + suffix)) {
+                                    delete first[key];
+                                }
+                            }
+                            copyArgs[0] = first;
+                        }
+                        provider[method].apply(provider, copyArgs);
                     });
                 }
             }]);
