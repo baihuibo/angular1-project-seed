@@ -2,9 +2,11 @@
 import {NgModule} from "core";
 
 import {InstanceDirective} from "./instance.directive";
+import {TestService} from "./test.service";
 
 @NgModule({
-    declarations: [InstanceDirective]
+    declarations: [InstanceDirective],
+    providers: [TestService]
 })
 export class ShareModule {
 }

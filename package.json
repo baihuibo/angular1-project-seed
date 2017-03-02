@@ -11,9 +11,9 @@
     "angular-ui-router": "^1.0.0-rc.1",
     "bootstrap": "^3.3.7",
     "core-js": "^2.4.1",
+    "del": "^2.2.2",
     "jquery": "^3.1.1",
     "ng-ui-router-state-events": "^1.0.1",
-    "remove": "^0.1.5",
     "tslib": "^1.2.0"
   },
   "devDependencies": {

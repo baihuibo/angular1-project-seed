@@ -1,7 +1,7 @@
 //Created by baihuibo on 2016/12/15.
 const path = require('path');
 const webpack = require('webpack');
-const remove = require('remove');
+const del = require('del');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -35,8 +35,10 @@ addToCopyList(angular.app.assets, "assets");
 
 /////// 删除输出目录文件
 try {
-    remove.removeAsync(angular.app.outDir);
+    console.log('删除目录', path.resolve(__dirname, angular.app.outDir));
+    del.sync([angular.app.outDir]);
 } catch (e) {
+    console.log('删除失败');
 }
 
 module.exports = {
@@ -80,14 +82,14 @@ module.exports = {
     },
     plugins: [
         new CopyWebpackPlugin(copyList),
-        new ExtractTextPlugin("[name].bundle.css"),
+        new ExtractTextPlugin(PROD_MODE ? '[name].[hash].css' : "[name].bundle.css"),
         new HtmlWebpackPlugin({
             template: angular.app.index // 源文件位置
         }),
         new AddAssetsFilesToHtml()
     ],
     output: {
-        filename: '[name].bundle.js',
+        filename: PROD_MODE ? '[name].[hash].js' : '[name].bundle.js',
         path: angular.app.outDir
     }
 };

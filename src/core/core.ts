@@ -16,6 +16,11 @@ export enum Names {
     pipe = 5
 }
 
+const NameMap = {
+    done: '_done_',
+    registerFn: '_moduleRegister_'
+};
+
 let globalTimer: number;
 function globalDigest() {// 触发全局的值检查
     clearTimeout(globalTimer);
@@ -91,6 +96,43 @@ export function NgModule(option: IModule) {
 
         registerDeclarations(option.declarations);
 
+        mod.config(['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector',
+            function ($controllerProvider, $provide, $compileProvider, $filterProvider, $injector) {
+                const providers = {
+                    $controllerProvider, $compileProvider, $filterProvider, $provide, $injector
+                };
+
+                console.log($controllerProvider);
+                mod[NameMap.registerFn] = function registerFn(childModuleName) {
+                    const child = module(childModuleName);
+
+                    if (!child[NameMap.done]) {
+
+                        startRegisterBlock(child['_invokeQueue']);
+                        startRegisterBlock(child['_configBlocks']);
+
+                        child.requires.forEach(sub => registerFn(sub));
+
+                        startRunsBlock(child['_runBlocks']);
+
+                        child[NameMap.done] = true;
+                    }
+                };
+
+                function startRunsBlock(queues) {
+                    // 启动所有应用的运行模块
+                    // TODO 问题，尚未解决子模块依赖的模块队列如何异步执行如队列
+                    queues.forEach(block => $injector.invoke(queues));
+                }
+
+                function startRegisterBlock(queues) {
+                    queues.forEach(args => {// 向父模块注入所有服务，启动所有配置服务
+                        const provider = providers[args[0]];
+                        provider[args[1]].apply(provider, args[2]);
+                    });
+                }
+            }]);
+
         function registerDeclarations(list: any[]) {
             list && list.filter(filterEmptyItem).forEach(item => {
                 const pipe = item[Names.pipe];
@@ -145,6 +187,12 @@ export function ViewParent(comp: Function) {
             require: {[key]: '?^' + compOption.selector}
         }, Names.component);
     }
+}
+
+export function asyncModuleRegister(parent, childEsModule, ngModuleName) {
+    const parentModule = module(parent[Names.module]);
+    const childNodeName = childEsModule[ngModuleName][Names.module];
+    parentModule[NameMap.registerFn](childNodeName);
 }
 
 function bindings_proxy(name, symbol) {

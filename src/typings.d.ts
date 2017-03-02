@@ -92,6 +92,8 @@ declare module "core" {
 
     export function strandToCamel(str: string): string;
 
+    export function asyncModuleRegister(parent: Function, child: Function, ngModuleName: string);
+
     /**
      * 组件配置
      */
@@ -173,4 +175,10 @@ declare module "core" {
     }
 }
 
-declare const require;
+
+interface webpackRequire {
+    (mod: string): any
+    ensure(mod: string[], done: Function);
+}
+
+declare const require: webpackRequire;

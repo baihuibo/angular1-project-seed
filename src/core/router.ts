@@ -4,6 +4,7 @@ import {IRouter, CanActivate} from "router";
 import {Names, NgModule, IComponentOptions} from "core";
 import {forEach} from "angular";
 import "angular-ui-router";
+import {strandToCamel} from "core";
 // import "ng-ui-router-state-events"; // 暂时不启用此插件
 
 export module RouterModule {
@@ -69,7 +70,7 @@ function fromState(state: IRouter) {
 function transformCompToString(state: IRouter) {
     const comp = state.component;
     const option: IComponentOptions = comp[Names.component];
-    state.component = option.selector || comp;
+    state.component = strandToCamel(option.selector || String(comp));
 }
 
 function getModule(config) {
