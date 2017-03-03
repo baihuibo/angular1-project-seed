@@ -1,9 +1,8 @@
 // Created by baihuibo on 2017/3/1.
 
 import {IRouter, CanActivate} from "router";
-import {Names, NgModule, IComponentOptions, strandToCamel} from "core";
-import {asyncModuleRegister} from "core";
-import {forEach} from "angular";
+import {forEach, noop} from "angular";
+import {asyncModuleRegister, Names, NgModule, IComponentOptions, strandToCamel} from "core";
 import "angular-ui-router";
 // import "ng-ui-router-state-events"; // 暂时不启用此插件
 
@@ -13,20 +12,11 @@ export module RouterModule {
             static $inject = ['$stateProvider', '$urlRouterProvider', '$templateFactoryProvider'];
 
             constructor($stateProvider: angular.ui.IStateProvider,
-                        $urlRouterProvider: angular.ui.IUrlRouterProvider,
-                        $templateFactoryProvider) {
+                        $urlRouterProvider: angular.ui.IUrlRouterProvider) {
                 routers.forEach(router => {
-
-                    // console.log('$templateFactoryProvider', $templateFactoryProvider);
 
                     if (router.resolve && router.resolve['loadChildren']) {
                         const loadFn = router.resolve['loadChildren'];
-                        // router.templateProvider = function () {
-                        //     return new Promise(function (resolve) {
-                        //         console.log('template');
-                        //         resolve('<app-async-page></app-async-page>');
-                        //     });
-                        // };
                         // 注入异步模块
                         loadFn['asyncModuleRegister'] = function (esModule, moduleName) {
                             asyncModuleRegister(module, esModule, moduleName);
@@ -40,7 +30,7 @@ export module RouterModule {
                     } else {
                         registerRouterProvider(router, $urlRouterProvider);
                     }
-                })
+                });
             }
         });
 
@@ -98,8 +88,7 @@ function getModule(config) {
         static $inject = ['$state', '$log'];
 
         constructor($state: angular.ui.IStateService) {
-            $state['defaultErrorHandler'](() => {
-            });
+            $state && $state['defaultErrorHandler'](noop);
         }
     }
 

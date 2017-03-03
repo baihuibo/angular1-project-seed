@@ -1,5 +1,5 @@
 // Created by baihuibo on 16/8/30.
-import {module, forEach, merge} from "angular";
+import {module, forEach, merge, element} from "angular";
 import {
     IModule,
     InjectableOption,
@@ -25,7 +25,7 @@ let globalTimer: number;
 function globalDigest() {// 触发全局的值检查
     clearTimeout(globalTimer);
     globalTimer = setTimeout(function () {
-        $(document)['scope']().$digest();
+        element(document)['scope']().$digest();
     }, 1);
 }
 
@@ -223,10 +223,10 @@ export function asyncModuleRegister(parent, childEsModule, ngModuleName) {
     parentModule[NameMap.registerFn](childNodeName);
 }
 
-function bindings_proxy(name, symbol) {
+function bindings_proxy(name: string, symbol: string) {
     return function (target, key) {
         setMetaData(target.constructor, {
-            bindings: {[name || key]: symbol}
+            bindings: {[key]: symbol + (name || key)}
         }, Names.component);
     }
 }
