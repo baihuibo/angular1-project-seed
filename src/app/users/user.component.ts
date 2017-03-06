@@ -22,7 +22,7 @@ import {User} from "./user";
      <button ng-click="showColor.setColor('black')">set color black</button>
 <button ng-click="showColor.setColor('yellow')">set color yellow</button>
 
-<app-show-color #="showColor"></app-show-color>
+<app-show-color alias="showColor"></app-show-color>
     `
 })
 export class UserComponent {

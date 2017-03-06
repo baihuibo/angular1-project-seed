@@ -21,20 +21,20 @@ import {Directive, strandToCamel} from "core";
  * ```
  *
  * ```html
- * <canvas #="$ctrl.canvas"></canvas>
- * <app-people #="$ctrl.people"></app-people>
+ * <canvas alias="$ctrl.canvas"></canvas>
+ * <app-people alias="$ctrl.people"></app-people>
  * ```
  */
 
 @Directive({
-    selector: '[#]'
+    selector: '[alias]'
 })
-export class InstanceDirective {
+export class AliasDirective {
     static $inject = ['$element', '$scope', '$attrs', '$parse'];
 
     constructor($el, $scope, $attrs, $parse) {
-        if ($attrs['#']) {
-            const assign = $parse($attrs['#']).assign;
+        if ($attrs['alias']) {
+            const assign = $parse($attrs['alias']).assign;
             const name = strandToCamel($el[0].localName);
             assign($scope, $el.data(`$${name}Controller`) || $el[0]);
         }

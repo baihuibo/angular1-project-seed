@@ -10,7 +10,7 @@ import {ShowColorComponent} from "../../../share/show-color/show-color.component
         
         <button ng-click="$ctrl.setColor('black')">set color black</button>
         <button ng-click="$ctrl.setColor('yellow')">set color yellow</button>
-        <app-show-color #="$ctrl.showColor"></app-show-color>
+        <app-show-color alias="$ctrl.showColor"></app-show-color>
     `
 })
 export class NextAsyncPageComponent {
