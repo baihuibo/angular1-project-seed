@@ -3,7 +3,7 @@
 
 // 文件命名规则
 //  [name].[type].[html,css,js,ts]
-// type = [component , module , service , pipe , directive , interceptor , guard , config]
+// type = [component , module , service , pipe , directive, guard , config]
 
 import {AppModule} from "./app/app.module";
 import {bootstrapModule} from "./core/browser-bootstrap";

@@ -2,11 +2,17 @@
     a file asdf
 </div>
 
-user = {{$ctrl.user}}
+user = {{$ctrl.user}} <br>
 
 
-{{'baihuibo' | state :1}}
+{{'baihuibo' | state :1}} <br>
 
-{{div.innerHTML}}
 
-<div test #="div">test directive <br> hello</div>
+<div test>
+    test directive <br> hello
+</div>
+
+<button ng-click="showColor.setColor('black')">set color black</button>
+<button ng-click="showColor.setColor('yellow')">set color yellow</button>
+
+<app-show-color #="showColor"></app-show-color>

@@ -8,11 +8,9 @@ import {PageAService} from "./pagea.service";
 export class PageAComponent {
     user: any;
 
-    static $inject = ['PageAService'];
+    static $inject = ['TesPageAServicetService'];
 
-    constructor(aService: PageAService) {
-        aService.addItem({newItem: true, name: 'new item'}).then((user) => {
-            this.user = user;
-        });
+    constructor(pageAService: PageAService) {
+        console.log(pageAService);
     }
 }

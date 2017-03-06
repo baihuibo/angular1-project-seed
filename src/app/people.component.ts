@@ -17,16 +17,7 @@ export class PeopleComponent {
     constructor(private $log: angular.ILogService) {
     }
 
-    private _obj;
-
-    @Input() set people(obj) {
-        console.log('[peopleComponent]: people', obj);
-        this._obj = obj;
-    };
-
-    get people() {
-        return this._obj;
-    }
+    @Input() people;
 
     @Output() peopleClick: Function;
 

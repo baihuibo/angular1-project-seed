@@ -1,5 +1,6 @@
 // Created by baihuibo on 2016/12/15.
 import {Component} from "core";
+import {TestService} from "./share/test.service";
 
 @Component({
     selector: 'app',
@@ -14,10 +15,10 @@ export class AppComponent {
         age: 13
     }];
 
-    static $inject = ['$log'];
+    static $inject = ['$log', 'TestService'];
 
-    constructor(private $log:angular.ILogService) {
-
+    constructor(private $log: angular.ILogService, testService: TestService) {
+        console.log(testService);
     }
 
     peopleClick(peopleReturnValue) {

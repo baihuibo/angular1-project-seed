@@ -1,5 +1,5 @@
 // Created by baihuibo on 16/8/30.
-import {module, forEach, merge, element} from "angular";
+import {module, forEach, merge, element, injector} from "angular";
 import {
     IModule,
     InjectableOption,
@@ -17,7 +17,7 @@ export enum Names {
 }
 
 const NameMap = {
-    done: '_done_',
+    loaded: '_loaded_',
     registerFn: '_moduleRegister_'
 };
 
@@ -87,7 +87,7 @@ export function Pipe(option: InjectableOption) {
 
 export function NgModule(option: IModule) {
     return function (classes) {
-        classes[Names.module] = option.name || `ng_module_${classes.name}_${nextId()}`;
+        classes[Names.module] = option.name || `ngModule_${classes.name}_${nextId()}`;
         const mod = module(classes[Names.module], transformImports(option.imports || []));
 
         registerProviders(option.providers, 'service', Names.injectable);
@@ -103,33 +103,48 @@ export function NgModule(option: IModule) {
                 };
 
                 const requires = mod.requires;
+                const runBlocks = [];
+                const modulesToLoad = ['ng'];
 
-                mod[NameMap.registerFn] = function registerFn(childModuleName) {
+                mod[NameMap.registerFn] = function (childModuleName) {
                     // 不要注入重复的模块
                     if (!requires.includes(childModuleName)) {
                         requires.push(childModuleName);
+                        if (mod['asyncModule']) {// 如果本身就是异步注入的模块，那就注入到当前节点的上级模块
+                            mod['rootModule'][NameMap.registerFn](childModuleName);
+                        } else {
+                            register(childModuleName);
+                            startRunsBlock(runBlocks);
+                            runBlocks.length = 0;// clear all
+                            modulesToLoad.length = 1;
+                        }
+                    }
 
-                        const childModule = module(childModuleName);
-                        if (!childModule[NameMap.done]) {
+                    function register(moduleName) {
+                        const childModule = module(moduleName);
+                        if (!childModule[NameMap.loaded]) {
+                            modulesToLoad.push(moduleName);
+
+                            childModule['rootModule'] = mod;// 保存真实的上级模块
+
                             // 1 加载依赖模块
-                            childModule.requires.forEach(sub => registerFn(sub));
+                            childModule.requires.forEach(sub => register(sub));
 
                             // 2 运行注册服务，组件，配置
                             startRegisterBlock(childModule['_invokeQueue']);
                             startRegisterBlock(childModule['_configBlocks']);
 
                             // 3 运行初始化模块方法
-                            startRunsBlock(childModule['_runBlocks']);
+                            runBlocks.push(...childModule['_runBlocks']);
 
-                            childModule[NameMap.done] = true;
+                            childModule[NameMap.loaded] = true;
                         }
                     }
                 };
 
                 function startRunsBlock(queues) {
                     // 启动所有应用的运行模块
-                    // TODO 问题，尚未解决子模块依赖的模块队列如何异步执行如队列
-                    queues.forEach(block => $injector.invoke(queues));
+                    // queues.forEach(block => $injector.invoke(block));
                 }
 
                 function startRegisterBlock(queues) {

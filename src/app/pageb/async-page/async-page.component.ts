@@ -1,6 +1,7 @@
 // Created by baihuibo on 2017/3/2.
 
 import {Component} from "core";
+import {TestService} from "../../share/test.service";
 
 @Component({
     selector: 'app-async-page',
@@ -16,9 +17,9 @@ import {Component} from "core";
     `
 })
 export class AsyncPageComponent {
-    static $inject = ['$resource'];
+    static $inject = ['TestService'];
 
-    constructor($resource) {
-        console.log('testService', $resource);
+    constructor(testService: TestService) {
+        console.log('testService', testService);
     }
 }

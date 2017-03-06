@@ -21,7 +21,7 @@ declare module "router" {
         controllerAs?: string;
         controllerProvider?: Function | Array<string | Function>;
         parent?: string | IRouter;
-        resolve?: {[name: string]: any};
+        resolve?: {[name: string]: any, loadChildren?: any};
         url?: string | angular.ui.IUrlMatcher;
         redirectTo?: string | Function | any[];
         params?: any;

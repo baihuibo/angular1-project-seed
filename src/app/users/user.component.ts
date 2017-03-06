@@ -18,6 +18,11 @@ import {User} from "./user";
             </li>
          </ul>
      </div>  
+     
+     <button ng-click="showColor.setColor('black')">set color black</button>
+<button ng-click="showColor.setColor('yellow')">set color yellow</button>
+
+<app-show-color #="showColor"></app-show-color>
     `
 })
 export class UserComponent {

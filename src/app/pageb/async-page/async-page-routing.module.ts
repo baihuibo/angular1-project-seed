@@ -14,6 +14,13 @@ const routers: IRouter[] = [
         url: '/async-page',
         name: 'pageb.async-page3',
         component: AsyncPage3Component
+    }, {
+        url: '/next-async-page',
+        name: 'pageb.async-page3.next-async-page',
+        component: 'next-async-page',
+        resolve: {
+            loadChildren: './next-async/next-async.module.ts#NextAsyncModule'
+        }
     }
 ];
 

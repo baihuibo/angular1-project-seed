@@ -8,9 +8,6 @@ import {Component} from "core";
     `
 })
 export class AsyncPage2Component {
-    static $inject = ['$resource'];
-
-    constructor($resource) {
-        console.log('testService', $resource);
+    constructor() {
     }
 }

@@ -5,12 +5,13 @@ import {Component} from "core";
 @Component({
     template: `
         <h1>async page3 component</h1>
+        
+        <a ui-sref="pageb.async-page3.next-async-page">next async page</a>
+        
+        <ui-view></ui-view>
     `
 })
 export class AsyncPage3Component {
-    static $inject = ['$resource'];
-
-    constructor($resource) {
-        console.log('testService', $resource);
+    constructor() {
     }
 }
