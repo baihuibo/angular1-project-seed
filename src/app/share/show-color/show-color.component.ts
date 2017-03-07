@@ -5,6 +5,7 @@ import {Component} from "core";
     selector: 'app-show-color',
     template: `
         current color : {{$ctrl.color}}
+        <p> show color P tag </p>
     `
 })
 export class ShowColorComponent {

@@ -1,6 +1,5 @@
 // Created by baihuibo on 16/8/30.
 import {module, forEach, merge, element, injector} from "angular";
-import scopeCss = require('scope-css');
 import {
     IModule,
     InjectableOption,
@@ -36,6 +35,7 @@ export function Component(option: IComponentOptions): any {
         option.controller = classes;
         let {prototype} = classes;
         let $onInit = prototype.$onInit;
+        let scoped = 'scoped-' + Math.random().toString(16).slice(2);
 
         prototype.$onInit = function () {
             setImmediate(() => {
@@ -45,9 +45,13 @@ export function Component(option: IComponentOptions): any {
             addStyle();
         };
 
+        if (option.template) {
+            // html scoped
+            option.template = option.template.replace(/<([\w-]+)/g, "<$1 " + scoped);
+        }
         setMetaData(classes, option, Names.component);
 
-        ///// 样式处理
+        ///// css scoped
         function addStyle() {
             if (option['styleInserted']) {
                 return;
@@ -58,7 +62,7 @@ export function Component(option: IComponentOptions): any {
                 styles += style[0][1] + '\n';
             });
             option.styles && option.styles.forEach(style => styles += style);
-            styles = scopeCss(styles, option.selector);
+            styles = scopeCss(styles, option.selector, scoped);
 
             if (styles) {
                 let styleElement = document.createElement("style");
@@ -293,4 +297,38 @@ function nextId() {
 
 function filterEmptyItem(i) {
     return !!i;
+}
+
+export function scopeCss(css, parent, attr) {
+    if (!css) return css;
+
+    if (!parent) return css;
+
+    css = replace(css, parent, attr);
+
+    //regexp.escape
+    let parentRe = parent.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+    //replace self-selectors
+    css = css.replace(new RegExp('(' + parentRe + ')\\s*\\1(?=[\\s\\r\\n,{])', 'g'), '$1');//'$1'
+
+    //replace `:host` with parent
+    css = css.replace(new RegExp('(' + parentRe + ')\\s*:host', 'g'), '$1');
+
+    //revoke wrongly replaced @ statements, like @supports, @import, @media etc.
+    css = css.replace(new RegExp('(' + parentRe + ')\\s*@', 'g'), '@');
+
+    return css;
+}
+function replace(css, parent, attr) {
+    //strip block comments
+    css = css.replace(/\/\*([\s\S]*?)\*\//g, '');
+
+    parent = parent.replace(/([A-Z])/g, function (m, $1: string) {
+        return '-' + $1.toLowerCase();
+    });
+
+    return css.replace(/([^\r\n,{}]+)(,(?=[^}]*\{)|\s*\{)/g, function (mat, $1, $2) {
+        return `${parent} ${$1.trim()}[${attr}]${$2}`;
+    });
 }

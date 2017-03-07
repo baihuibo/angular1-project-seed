@@ -4,7 +4,7 @@ import {PageAService} from "./pagea.service";
 
 @Component({
     templateUrl: './pagea.component.html',
-    styleUrls: ['./pagea.component.css'],
+    styleUrls: ['./pagea.component.less'],
     styles: ['.test{name:1}']
 })
 export class PageAComponent {

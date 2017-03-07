@@ -101,8 +101,8 @@ declare module "core" {
         selector?: string
         controller?: string | Injectable<any>;
         controllerAs?: string;
-        template?: string | Injectable<(...args: any[]) => string>;
-        templateUrl?: string | Injectable<(...args: any[]) => string>;
+        template?: string;
+        templateUrl?: string;
         styleUrls?: string[];
         styles?: string[],
         bindings?: {[boundProperty: string]: string};
