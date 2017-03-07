@@ -3,12 +3,14 @@ import {Component} from "core";
 import {PageAService} from "./pagea.service";
 
 @Component({
-    template: require('./pagea.component.html')
+    templateUrl: './pagea.component.html',
+    styleUrls: ['./pagea.component.css'],
+    styles: ['.test{name:1}']
 })
 export class PageAComponent {
     user: any;
 
-    static $inject = ['TesPageAServicetService'];
+    static $inject = ['PageAService'];
 
     constructor(pageAService: PageAService) {
         console.log(pageAService);

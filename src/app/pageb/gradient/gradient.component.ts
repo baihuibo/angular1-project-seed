@@ -3,7 +3,7 @@ import {Component, InputOnly, Input} from "core";
 
 @Component({
     selector: 'app-gradient',
-    template: require('./gradient.component.html')
+    templateUrl: './gradient.component.html'
 })
 export class GradientBComponent {
 

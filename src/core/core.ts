@@ -1,5 +1,6 @@
 // Created by baihuibo on 16/8/30.
 import {module, forEach, merge, element, injector} from "angular";
+import scopeCss = require('scope-css');
 import {
     IModule,
     InjectableOption,
@@ -34,16 +35,42 @@ export function Component(option: IComponentOptions): any {
         option.selector = option.selector ? strandToCamel(option.selector.trim()) : 'component' + nextId();
         option.controller = classes;
         let {prototype} = classes;
-        if (prototype.$onInit) {
-            let old = prototype.$onInit;
-            prototype.$onInit = function () {
-                setImmediate(() => {
-                    old.call(this);
-                    globalDigest();
-                });
-            };
-        }
+        let $onInit = prototype.$onInit;
+
+        prototype.$onInit = function () {
+            setImmediate(() => {
+                $onInit && $onInit.call(this);
+                globalDigest();
+            });
+            addStyle();
+        };
+
         setMetaData(classes, option, Names.component);
+
+        ///// 样式处理
+        function addStyle() {
+            if (option['styleInserted']) {
+                return;
+            }
+            option['styleInserted'] = true;
+            let styles = '';
+            option.styleUrls && option.styleUrls.forEach(style => {
+                styles += style[0][1] + '\n';
+            });
+            option.styles && option.styles.forEach(style => styles += style);
+            styles = scopeCss(styles, option.selector);
+
+            if (styles) {
+                let styleElement = document.createElement("style");
+                styleElement.type = "text/css";
+                document.head.appendChild(styleElement);
+                if (styleElement['styleSheet']) {
+                    styleElement['styleSheet'].cssText = styles;
+                } else {
+                    styleElement.appendChild(document.createTextNode(styles));
+                }
+            }
+        }
     }
 }
 

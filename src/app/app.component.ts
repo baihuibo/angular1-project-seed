@@ -4,7 +4,7 @@ import {TestService} from "./share/test.service";
 
 @Component({
     selector: 'app',
-    template: require('./app.component.html')
+    templateUrl: './app.component.html'
 })
 export class AppComponent {
     peopleList = [{

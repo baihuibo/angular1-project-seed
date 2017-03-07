@@ -2,7 +2,7 @@
 import {Component} from "core";
 
 @Component({
-    template: require('./pageb.component.html')
+    templateUrl: './pageb.component.html'
 })
 export class PageBComponent {
     static $inject = ['$state', '$log'];

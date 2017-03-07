@@ -103,6 +103,8 @@ declare module "core" {
         controllerAs?: string;
         template?: string | Injectable<(...args: any[]) => string>;
         templateUrl?: string | Injectable<(...args: any[]) => string>;
+        styleUrls?: string[];
+        styles?: string[],
         bindings?: {[boundProperty: string]: string};
         transclude?: boolean | {[slot: string]: string};
         require?: {[controller: string]: string};
