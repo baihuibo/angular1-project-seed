@@ -9,8 +9,8 @@ import {TestService} from "../../share/test.service";
         <h1>async page component</h1>
         
         <ul>
-            <li> <a ui-sref="pageb.async-page2">page2</a> </li>
-            <li> <a ui-sref="pageb.async-page3">page3</a> </li>
+            <li> <a ui-sref="pagec.async-page2">page2</a> </li>
+            <li> <a ui-sref="pagec.async-page3">page3</a> </li>
         </ul>
         
         <ui-view></ui-view>

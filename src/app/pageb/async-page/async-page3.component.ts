@@ -6,7 +6,7 @@ import {Component} from "core";
     template: `
         <h1>async page3 component</h1>
         
-        <a ui-sref="pageb.async-page3.next-async-page">next async page</a>
+        <a ui-sref="pagec.async-page3.next-async-page">next async page</a>
         
         <ui-view></ui-view>
     `
