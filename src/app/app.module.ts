@@ -17,11 +17,12 @@ import {HttpDevProxyService} from "../core/http-dev-proxy.service";
 import {HttpConfig} from "./http.config";
 import {HttpCacheService} from "../core/http-cache.service";
 import {StatePipe} from "./pagea/state.pipe";
+import {AppConfig} from "./app.config";
 
 @NgModule({
     imports: [ShareModule, UsersModule, AppRoutingModule],
     providers: [PageAService, HttpDevProxyService, HttpCacheService],
-    configs: [HttpConfig],
+    configs: [HttpConfig, AppConfig],
     declarations: [
         PageAComponent, PageBComponent, AppComponent,
         PeopleComponent, GradientBComponent,
