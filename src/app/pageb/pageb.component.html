@@ -2,14 +2,8 @@
     b file
 </div>
 
-
 <button class="btn" type="button"
-        data-toggle="modal"
-        data-target="#gradient"
-        ng-click="$ctrl.setGradient()">打开
+        ng-click="gradient.open($ctrl.gradient)">打开
 </button>
 
-<app-gradient model-id="gradient"
-              ng-if="$ctrl.gradient"
-              gradient="$ctrl.gradient">
-</app-gradient>
+<app-gradient alias="gradient"></app-gradient>

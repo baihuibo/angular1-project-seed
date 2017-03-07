@@ -3,6 +3,7 @@ import {NgModule} from "core";
 import {RouterModule, IRouter} from "router";
 import {PageAComponent} from "./pagea/pagea.component";
 import {PageAGuard} from "./pagea/pagea.guard";
+import {PageBComponent} from "./pageb/pageb.component";
 
 const configs: IRouter[] = [
     {
@@ -13,6 +14,10 @@ const configs: IRouter[] = [
     }, {
         url: '/pageb',
         name: 'pageb',
+        component: PageBComponent
+    }, {
+        url: '/pagec',
+        name: 'pagec',
         component: 'app-async-page',
         resolve: {
             loadChildren: "./pageb/async-page/async-page.module.ts#AsyncPageModule"

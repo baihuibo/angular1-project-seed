@@ -5,3 +5,22 @@
 使用了webpack + typescript
 
 关于模块结构组织，参考的是angular2的方式
+
+
+安装依赖
+====
+```bash
+npm install
+```
+
+启动
+=======
+```bash
+npm start
+```
+
+生产环境部署
+=======
+```bash
+npm run build
+```

@@ -7,13 +7,18 @@ import {Component, InputOnly, Input} from "core";
 })
 export class GradientBComponent {
 
-    @InputOnly() modelId: string;
+    private modelId: string = Date.now().toString();
 
-    @Input() gradient: any;
+    gradient: any;
 
     static $inject = [];
 
     constructor() {
 
+    }
+
+    open(gradient) {
+        this.gradient = gradient;
+        $('#' + this.modelId).modal('show');
     }
 }

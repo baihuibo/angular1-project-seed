@@ -11,9 +11,5 @@ export class PageBComponent {
 
     }
 
-    gradient: any;
-
-    setGradient() {
-        this.gradient = {id: 1, name: 'baihuibo'};
-    }
+    gradient: any = {id: 1, name: 'baihuibo'};
 }
