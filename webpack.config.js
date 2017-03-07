@@ -63,6 +63,18 @@ module.exports = {
                     ]
                 }),
             },
+            {
+                test: /\.js/, loaders: StringReplaceWebpackPlugin.replace({
+                replacements: [
+                    {
+                        pattern: /#\s*sourceMappingURL=(.*\.map)\s*/g,
+                        replacement: function () {
+                            return ' remove sourceMapping '
+                        }
+                    }
+                ]
+            })
+            },
             {test: /\.html/, loaders: "html-loader"},
             {test: /\.css/, loaders: 'css-loader'},
             {test: /\.less/, loaders: 'css-loader!less-loader'},
@@ -114,7 +126,12 @@ AddAssetsFilesToHtml.prototype.apply = function (compiler) {
                         }
                     }
                     size += fileContent.length;
-                    contents.push(fileContent.toString());
+                    let content = fileContent.toString();
+                    let match = content.match(/#\s*sourceMappingURL=(.*\.map)\s*/);
+                    if (match && match.length) {
+                        content = content.replace(match[0], ' remove sourceMapping ');
+                    }
+                    contents.push(content);
                 });
                 compilation.assets[name] = {
                     source(){
