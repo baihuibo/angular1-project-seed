@@ -3,12 +3,16 @@ const path = require('path');
 const webpack = require('webpack');
 const del = require('del');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const fs = require('fs');
 const StringReplaceWebpackPlugin = require('string-replace-webpack-plugin');
 const angular = require('./angular-conf.json');
 
 const PROD_MODE = /prod|production/i.test(process.env['ENV_WEBPACK']);
 const extensions = ['.ts', '.js', '.json', '.html'];
+
+const copyList = [];
+addToCopyList(angular.app.assets, "assets");
 
 let baseScript = [
     path.resolve(__dirname, "node_modules/core-js/client/core.js"),
@@ -66,6 +70,7 @@ module.exports = {
         ]
     },
     plugins: [
+        new CopyWebpackPlugin(copyList),
         new StringReplaceWebpackPlugin(),
         new HtmlWebpackPlugin({
             template: angular.app.index // 源文件位置
@@ -84,8 +89,8 @@ function AddAssetsFilesToHtml() {
 AddAssetsFilesToHtml.prototype.apply = function (compiler) {
     // ...
     compiler.plugin('compilation', function (compilation) {
-        const vendorJs = PROD_MODE ? 'vendor.[hash].js' : 'vendor.js';
-        const vendorCss = PROD_MODE ? 'vendor.[hash].css' : 'vendor.css';
+        const vendorJs = PROD_MODE ? 'vendors.[hash].js' : 'vendors.js';
+        const vendorCss = PROD_MODE ? 'styles.[hash].css' : 'styles.css';
         const scripts = [...baseScript, ...angular.app.scripts];
         const styles = [...angular.app.styles];
 
@@ -127,34 +132,36 @@ AddAssetsFilesToHtml.prototype.apply = function (compiler) {
     });
 };
 
+function addToCopyList(list, to) {
+    if (Array.isArray(list)) {
+        list.forEach(function (file) {
+            copyList.push({from: file, to: to || libPath});
+        });
+    }
+}
+
 function replacement(match, file, moduleName, offset, string) {
-    return `
-    loadChildren : (function(){
-      let promise; // 优化异步模块加载器
-      return function loadFn(){
-         if(promise) return promise;
-         
-          return promise = new Promise(function (resolve) {
-             require.ensure(["${file}"], function (require) {
-                 loadFn['asyncModuleRegister'](require("${file}"), '${moduleName}');
-                 resolve();
-             });
-          });
-      }
-    }()) ,
-    `;
+    return `loadChildren : (function(){
+              let promise; // 优化异步模块加载器
+              return function loadFn(){
+                 if(promise) return promise;
+                 
+                  return promise = new Promise(function (resolve) {
+                     require.ensure(["${file}"], function (require) {
+                         loadFn['asyncModuleRegister'](require("${file}"), '${moduleName}');
+                         resolve();
+                     });
+                  });
+              }
+            }())`;
 }
 
 function replacementTemplate(match, file, offset, string) {
-    return `
-        template : require("${file}")
-    `;
+    return `template : require("${file}")`;
 }
 
 function replacementStyles(match, file, offset, string) {
     const files = file.replace(/['"]/g, '').split(/\s*,\s*/);
     const content = files.map(file => `require("${file}")`).join(',');
-    return `
-    styleUrls : [${content}]
-    `;
+    return `styleUrls : [${content}]`;
 }
