@@ -21,37 +21,41 @@ const NameMap = {
     registerChild: '_moduleRegister_'
 };
 
+const $doc: angular.IAugmentedJQuery = element(document);
 let globalTimer: number;
 function globalDigest() {// 触发全局的值检查
     clearTimeout(globalTimer);
-    globalTimer = setTimeout(function () {
-        element(document)['scope']().$digest();
-    }, 0);
+    globalTimer = setTimeout(() => $doc.scope().$digest(), 0);
 }
 
 export function Component(option: IComponentOptions): any {
     return function (classes) {
         const selector = (option.selector || `app-component${nextId()}`).trim();
-        const {prototype} = classes;
-        const {$onInit} = prototype;
-        const attrScoped = 'scoped-' + Math.random().toString(32).slice(-8);
+        const style = getStyle(option);
+        if (style && option.template) {
+            // 如果没有样式的情况下，没有必要做scoped隔离
+            const attrScoped = 'scoped-' + Math.random().toString(32).slice(-8),
+                {prototype} = classes, {$onInit} = prototype;
+            prototype.$onInit = function () {
+                if ($onInit) {
+                    setImmediate(() => {
+                        $onInit.call(this);
+                        globalDigest();
+                    });
+                } else {// 如果未曾实现过此接口，则在样式初始化后销毁它
+                    delete prototype.$onInit;
+                }
+                if (!option['applyStyle']) {
+                    addStyle(style, attrScoped, selector);
+                    option['applyStyle'] = true;
+                }
+            };
 
-        prototype.$onInit = function () {
-            setImmediate(() => {
-                $onInit && $onInit.call(this);
-                $onInit && globalDigest();
-            });
-            addStyle(option, attrScoped, selector);
-            if (!$onInit) {// 如果未曾实现过此接口，则在样式初始化后销毁它
-                delete prototype.$onInit;
-            }
-        };
+            option.template = option.template.replace(/<([\w-]+)/g, "<$1 " + attrScoped);
+        }
 
         option.selector = strandToCamel(selector);// 转换为驼峰
         option.controller = classes;
-        if (option.template) {// html scoped
-            option.template = option.template.replace(/<([\w-]+)/g, "<$1 " + attrScoped);
-        }
         setMetaData(classes, option, Names.component);
     }
 }
@@ -258,36 +262,30 @@ function fnCamelCaseReplace(all, letter) {
 }
 
 ///// 添加样式
-function addStyle(option: IComponentOptions, scoped: string, selector: string) {
-    if (option['styleInserted']) {
-        return;
-    }
-    option['styleInserted'] = true;
+function getStyle(option) {
     let styles = '';
     option.styleUrls && option.styleUrls.forEach(style => {
         styles += style[0][1] + '\n';
     });
     option.styles && option.styles.forEach(style => styles += style);
+    return styles.trim();
+}
+
+function addStyle(styles: string, scoped: string, selector: string) {
     styles = scopeCss(styles, selector, scoped);
 
-    if (styles) {
-        let styleElement = document.createElement("style");
-        styleElement.type = "text/css";
-        document.head.appendChild(styleElement);
-        if (styleElement['styleSheet']) {
-            styleElement['styleSheet'].cssText = styles;
-        } else {
-            styleElement.appendChild(document.createTextNode(styles));
-        }
+    let styleElement = document.createElement("style");
+    styleElement.type = "text/css";
+    document.head.appendChild(styleElement);
+    if (styleElement['styleSheet']) {
+        styleElement['styleSheet'].cssText = styles;
+    } else {
+        styleElement.appendChild(document.createTextNode(styles));
     }
 }
 
 // 范围css
-export function scopeCss(css, parent, attr) {
-    if (!css) return css;
-
-    if (!parent) return css;
-
+export function scopeCss(css: string, parent: string, attr: string) {
     css = replace(css, parent, attr);
 
     //regexp.escape
