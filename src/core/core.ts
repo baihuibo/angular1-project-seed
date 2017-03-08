@@ -134,30 +134,21 @@ export function NgModule(option: IModule) {
                 };
 
                 const requires = mod.requires;
-                const runBlocks = [];
-                const modulesToLoad = ['ng'];
 
                 mod[NameMap.registerFn] = function (childModuleName) {
+                    if (mod.name != 'app-module') {
+                        return module('app-module')[NameMap.registerFn](childModuleName);
+                    }
+
                     // 不要注入重复的模块
                     if (!requires.includes(childModuleName)) {
                         requires.push(childModuleName);
-                        if (mod['asyncModule']) {// 如果本身就是异步注入的模块，那就注入到当前节点的上级模块
-                            mod['rootModule'][NameMap.registerFn](childModuleName);
-                        } else {
-                            register(childModuleName);
-                            startRunsBlock(runBlocks);
-                            runBlocks.length = 0;// clear all
-                            modulesToLoad.length = 1;
-                        }
+                        register(childModuleName);
                     }
 
                     function register(moduleName) {
                         const childModule = module(moduleName);
                         if (!childModule[NameMap.loaded]) {
-                            modulesToLoad.push(moduleName);
-
-                            childModule['rootModule'] = mod;// 保存真实的上级模块
-
                             // 1 加载依赖模块
                             childModule.requires.forEach(sub => register(sub));
 
@@ -165,24 +156,20 @@ export function NgModule(option: IModule) {
                             startRegisterBlock(childModule['_invokeQueue']);
                             startRegisterBlock(childModule['_configBlocks']);
 
-                            // 3 运行初始化模块方法
-                            runBlocks.push(...childModule['_runBlocks']);
-
                             childModule[NameMap.loaded] = true;
                         }
                     }
                 };
 
-                function startRunsBlock(queues) {
-                    // 启动所有应用的运行模块
-                    // queues.forEach(block => $injector.invoke(block));
-                }
-
                 function startRegisterBlock(queues) {
                     queues.forEach(([register, method, args]) => {
                         const provider = providers[register];
-                        const copyArgs = Array.from(args).slice();
-                        const suffix = method.charAt(0).toUpperCase() + method.slice(1);
+                        const copyArgs = Array.from(args);
+                        let suffix = 'Provider';
+
+                        if (/directive|component/i.test(method)) {
+                            suffix = 'Directive';
+                        }
 
                         let [first] = copyArgs;
                         if (Array.isArray(first)) {

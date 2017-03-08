@@ -93,7 +93,7 @@ function getModule(config) {
     }
 
     @NgModule({
-        imports: ['ng', 'ui.router'],
+        imports: ['ui.router'],
         configs: [config],
         runs: [ErrorHandlerOverwrite]
     })
