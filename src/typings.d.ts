@@ -92,7 +92,7 @@ declare module "core" {
 
     export function strandToCamel(str: string): string;
 
-    export function asyncModuleRegister(parent: Function, child: Function, ngModuleName: string);
+    export function asyncModuleRegister(moduleClasses: Function);
 
     /**
      * 组件配置

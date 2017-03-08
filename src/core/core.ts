@@ -18,7 +18,7 @@ export enum Names {
 
 const NameMap = {
     loaded: '_loaded_',
-    registerFn: '_moduleRegister_'
+    registerChild: '_moduleRegister_'
 };
 
 let globalTimer: number;
@@ -35,45 +35,47 @@ export function Component(option: IComponentOptions): any {
         option.controller = classes;
         let {prototype} = classes;
         let $onInit = prototype.$onInit;
-        let scoped = 'scoped-' + Math.random().toString(16).slice(2);
+        let attrScoped = 'scoped-' + Math.random().toString(32).slice(-8);
 
         prototype.$onInit = function () {
             setImmediate(() => {
                 $onInit && $onInit.call(this);
-                globalDigest();
+                $onInit && globalDigest();
             });
-            addStyle();
+            addStyle(option, attrScoped);
+            if (!$onInit) {// 如果未曾实现过此接口，则在样式初始化后销毁它
+                delete prototype.$onInit;
+            }
         };
 
-        if (option.template) {
-            // html scoped
-            option.template = option.template.replace(/<([\w-]+)/g, "<$1 " + scoped);
+        if (option.template) {// html scoped
+            option.template = option.template.replace(/<([\w-]+)/g, "<$1 " + attrScoped);
         }
         setMetaData(classes, option, Names.component);
+    }
+}
 
-        ///// css scoped
-        function addStyle() {
-            if (option['styleInserted']) {
-                return;
-            }
-            option['styleInserted'] = true;
-            let styles = '';
-            option.styleUrls && option.styleUrls.forEach(style => {
-                styles += style[0][1] + '\n';
-            });
-            option.styles && option.styles.forEach(style => styles += style);
-            styles = scopeCss(styles, option.selector, scoped);
+///// css scoped
+function addStyle(option: IComponentOptions, scoped: string) {
+    if (option['styleInserted']) {
+        return;
+    }
+    option['styleInserted'] = true;
+    let styles = '';
+    option.styleUrls && option.styleUrls.forEach(style => {
+        styles += style[0][1] + '\n';
+    });
+    option.styles && option.styles.forEach(style => styles += style);
+    styles = scopeCss(styles, option.selector, scoped);
 
-            if (styles) {
-                let styleElement = document.createElement("style");
-                styleElement.type = "text/css";
-                document.head.appendChild(styleElement);
-                if (styleElement['styleSheet']) {
-                    styleElement['styleSheet'].cssText = styles;
-                } else {
-                    styleElement.appendChild(document.createTextNode(styles));
-                }
-            }
+    if (styles) {
+        let styleElement = document.createElement("style");
+        styleElement.type = "text/css";
+        document.head.appendChild(styleElement);
+        if (styleElement['styleSheet']) {
+            styleElement['styleSheet'].cssText = styles;
+        } else {
+            styleElement.appendChild(document.createTextNode(styles));
         }
     }
 }
@@ -119,7 +121,7 @@ export function Pipe(option: InjectableOption) {
 export function NgModule(option: IModule) {
     return function (classes) {
         classes[Names.module] = option.name || `ngModule_${classes.name}_${nextId()}`;
-        const mod = module(classes[Names.module], transformImports(option.imports || []));
+        const iModule = module(classes[Names.module], transformImports(option.imports || []));
 
         registerProviders(option.providers, 'service', Names.injectable);
         registerProviders(option.configs, 'config');
@@ -127,72 +129,67 @@ export function NgModule(option: IModule) {
 
         registerDeclarations(option.declarations);
 
-        mod.config(['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector',
+        iModule.config(['$controllerProvider', '$provide', '$compileProvider', '$filterProvider', '$injector',
             function ($controllerProvider, $provide, $compileProvider, $filterProvider, $injector) {
-                const providers = {
-                    $controllerProvider, $compileProvider, $filterProvider, $provide, $injector
-                };
-
-                const requires = mod.requires;
-
-                mod[NameMap.registerFn] = function (childModuleName) {
-                    if (mod.name != 'app-module') {
-                        return module('app-module')[NameMap.registerFn](childModuleName);
-                    }
-
-                    // 不要注入重复的模块
-                    if (!requires.includes(childModuleName)) {
-                        requires.push(childModuleName);
-                        register(childModuleName);
-                    }
-
-                    function register(moduleName) {
-                        const childModule = module(moduleName);
-                        if (!childModule[NameMap.loaded]) {
-                            // 1 加载依赖模块
-                            childModule.requires.forEach(sub => register(sub));
-
-                            // 2 运行注册服务，组件，配置
-                            startRegisterBlock(childModule['_invokeQueue']);
-                            startRegisterBlock(childModule['_configBlocks']);
-
-                            childModule[NameMap.loaded] = true;
-                        }
-                    }
-                };
-
-                function startRegisterBlock(queues) {
-                    queues.forEach(([register, method, args]) => {
-                        const provider = providers[register];
-                        const copyArgs = Array.from(args);
-                        let suffix = 'Provider';
-
-                        if (/directive|component/i.test(method)) {
-                            suffix = 'Directive';
-                        }
-
-                        let [first] = copyArgs;
-                        if (Array.isArray(first)) {
-                            // config
-                        } else if (typeof first === 'string') {
-                            // component,directive,service,filter
-                            if ($injector.has(first + suffix)) {
-                                return; // 不注册重复的组件和服务
-                            }
-                        } else {
-                            // service , directive, filter
-                            for (let [key, value] of Object.entries(first)) {
-                                // 重复的组件不在注入父模块
-                                if ($injector.has(key + suffix)) {
-                                    delete first[key];
-                                }
-                            }
-                            copyArgs[0] = first;
-                        }
-                        provider[method].apply(provider, copyArgs);
-                    });
-                }
+                iModule['providers'] = {$controllerProvider, $compileProvider, $filterProvider, $provide, $injector};
             }]);
+
+        iModule[NameMap.registerChild] = registerChildModule;
+        function registerChildModule(childNgModuleName) {
+            // 不要注入重复的模块
+            if (!iModule.requires.includes(childNgModuleName)) {
+                iModule.requires.push(childNgModuleName);
+                addChildrenModule(childNgModuleName);
+            }
+        }
+
+        function addChildrenModule(childNgModuleName) {
+            const childNgModule = module(childNgModuleName);
+            if (!childNgModule[NameMap.loaded]) {
+                // 1 加载依赖模块
+                childNgModule.requires.forEach(name => registerChildModule(name));
+
+                const providers = iModule['providers'], {$injector} = providers;
+
+                // 2 运行注册服务，组件，配置
+                _invokeQueues(childNgModule['_invokeQueue'], providers, $injector);
+                _invokeQueues(childNgModule['_configBlocks'], providers, $injector);
+
+                childNgModule[NameMap.loaded] = true;
+            }
+        }
+
+        function _invokeQueues(queues, providers, $injector) {
+            queues.forEach(([register, method, args]) => {
+                const provider = providers[register];
+                const copyArgs = Array.from(args);
+                let suffix = 'Provider';
+
+                if (/directive|component/i.test(method)) {
+                    suffix = 'Directive';
+                }
+
+                let [first] = copyArgs;
+                if (Array.isArray(first)) {
+                    // config
+                } else if (typeof first === 'string') {
+                    // component,directive,service,filter
+                    if ($injector.has(first + suffix)) {
+                        return; // 不注册重复的组件和服务
+                    }
+                } else {
+                    // service , directive, filter
+                    for (let [key, value] of Object.entries(first)) {
+                        // 重复的组件不在注入父模块
+                        if ($injector.has(key + suffix)) {
+                            delete first[key];
+                        }
+                    }
+                    copyArgs[0] = first;
+                }
+                provider[method].apply(provider, copyArgs);
+            });
+        }
 
         function registerDeclarations(list: any[]) {
             list && list.filter(filterEmptyItem).forEach(item => {
@@ -200,15 +197,15 @@ export function NgModule(option: IModule) {
                 const component: IComponentOptions = item[Names.component];
                 const directive = item[Names.directive];
                 if (pipe) {
-                    mod.filter(pipe.name, ['$injector', function ($injector) {
+                    iModule.filter(pipe.name, ['$injector', function ($injector) {
                         const instance: PipeTransform = $injector.instantiate(item);
                         return function (value, ...args) {
                             return instance.transform(value, ...args);
                         }
                     }]);
                 } else {
-                    component && mod.component(component.selector, component);
-                    directive && mod.directive(directive);
+                    component && iModule.component(component.selector, component);
+                    directive && iModule.directive(directive);
                 }
             });
         }
@@ -223,7 +220,7 @@ export function NgModule(option: IModule) {
         }
 
         function registerProviders(items: any[], method: string, names?: Names) {
-            items && items.filter(filterEmptyItem).forEach(item => mod[method](names ? item[names] : item));
+            items && items.filter(filterEmptyItem).forEach(item => iModule[method](names ? item[names] : item));
         }
     }
 }
@@ -250,10 +247,9 @@ export function ViewParent(comp: Function) {
     }
 }
 
-export function asyncModuleRegister(parent, childEsModule, ngModuleName) {
-    const parentModule = module(parent[Names.module]);
-    const childNodeName = childEsModule[ngModuleName][Names.module];
-    parentModule[NameMap.registerFn](childNodeName);
+export function asyncModuleRegister(ngModuleClasses: Function) {
+    const appModule = module(window['appModule'][Names.module]);
+    appModule[NameMap.registerChild](ngModuleClasses[Names.module]);
 }
 
 function bindings_proxy(name: string, symbol: string) {

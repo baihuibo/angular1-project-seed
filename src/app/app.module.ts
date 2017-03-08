@@ -20,7 +20,6 @@ import {StatePipe} from "./pagea/state.pipe";
 import {AppConfig} from "./app.config";
 
 @NgModule({
-    name: 'app-module',
     imports: [ShareModule, UsersModule, AppRoutingModule],
     providers: [PageAService, HttpDevProxyService, HttpCacheService],
     configs: [HttpConfig, AppConfig],

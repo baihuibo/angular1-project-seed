@@ -18,8 +18,8 @@ export module RouterModule {
                     if (router.resolve && router.resolve['loadChildren']) {
                         const loadFn = router.resolve['loadChildren'];
                         // 注入异步模块
-                        loadFn['asyncModuleRegister'] = function (esModule, moduleName) {
-                            asyncModuleRegister(module, esModule, moduleName);
+                        loadFn['asyncModuleRegister'] = function (esModule, className) {
+                            asyncModuleRegister(esModule[className]);
                         };
                     }
 
