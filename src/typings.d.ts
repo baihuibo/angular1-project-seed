@@ -28,6 +28,8 @@ declare module "router" {
         views?: {[name: string]: IRouter};
         abstract?: boolean;
 
+        children?: IRouter[];
+
         canActivate?: Array<Function>;
         canActivateChild?: Function;
         CanDeactivate?: Function;

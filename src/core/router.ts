@@ -8,37 +8,49 @@ import "angular-ui-router";
 
 export module RouterModule {
     export function forRoot(routers: IRouter[]) {
-        const module = getModule(class RouterConfig {
+        return getModule(class RouterConfig {
             static $inject = ['$stateProvider', '$urlRouterProvider', '$templateFactoryProvider'];
 
             constructor($stateProvider: angular.ui.IStateProvider,
                         $urlRouterProvider: angular.ui.IUrlRouterProvider) {
-                routers.forEach(router => {
 
-                    if (router.resolve && router.resolve['loadChildren']) {
-                        const loadFn = router.resolve['loadChildren'];
-                        // 注入异步模块
-                        loadFn['asyncModuleRegister'] = function (esModule, className) {
-                            asyncModuleRegister(esModule[className]);
-                        };
-                    }
+                function addAll(list: IRouter[], parent?: IRouter) {
+                    list.forEach(router => {
+                        if (router.children) {
+                            addAll(router.children, router);
+                        } else if (router.name) {
+                            routerRegister(router, $stateProvider, parent);
+                        } else {
+                            registerRouterProvider(router, $urlRouterProvider);
+                        }
+                    });
+                }
 
-                    if (Array.isArray(router)) {
-                        (<Array<IRouter>>router).forEach(state => register(fromState(state), $stateProvider));
-                    } else if (router.name) {
-                        register(fromState(router), $stateProvider);
-                    } else {
-                        registerRouterProvider(router, $urlRouterProvider);
-                    }
-                });
+                addAll(routers);
             }
         });
-
-        return module;
     }
 
     export function forChild(routers: IRouter[]) {
         return forRoot(routers);
+    }
+
+    function routerRegister(router: IRouter,
+                            $stateProvider: angular.ui.IStateProvider,
+                            parent?: IRouter) {
+
+        if (parent && router.name) {
+            router.name = `${parent.name}.${router.name}`;
+        }
+
+        if (router.resolve && router.resolve['loadChildren']) {
+            const loadFn = router.resolve['loadChildren'];
+            // 注入异步模块
+            loadFn['asyncModuleRegister'] = function (esModule, className) {
+                asyncModuleRegister(esModule[className]);
+            };
+        }
+        register(fromState(router), $stateProvider);
     }
 }
 
