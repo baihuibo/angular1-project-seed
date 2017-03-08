@@ -25,7 +25,7 @@ const $doc: angular.IAugmentedJQuery = element(document);
 let globalTimer: number;
 function globalDigest() {// 触发全局的值检查
     clearTimeout(globalTimer);
-    globalTimer = setTimeout(() => $doc.scope().$digest(), 0);
+    globalTimer = setTimeout(() => $doc.scope().$apply(), 0);
 }
 
 export function Component(option: IComponentOptions): any {
@@ -254,11 +254,9 @@ function filterEmptyItem(i) {
 
 // 串转驼峰 (aaa-test) => (aaaTest)
 export function strandToCamel(name: string) {
-    return name.replace(/-([a-z])/g, fnCamelCaseReplace);
-}
-
-function fnCamelCaseReplace(all, letter) {
-    return letter.toUpperCase();
+    return name.replace(/-([a-z])/g, function camelCaseReplace(all, letter) {
+        return letter.toUpperCase();
+    });
 }
 
 ///// 添加样式
@@ -267,7 +265,7 @@ function getStyle(option) {
     option.styleUrls && option.styleUrls.forEach(style => {
         styles += style[0][1] + '\n';
     });
-    option.styles && option.styles.forEach(style => styles += style);
+    option.styles && option.styles.forEach(style => styles += style + '\n');
     return styles.trim();
 }
 
@@ -276,12 +274,14 @@ function addStyle(styles: string, scoped: string, selector: string) {
 
     let styleElement = document.createElement("style");
     styleElement.type = "text/css";
-    document.head.appendChild(styleElement);
+    styleElement.media = 'screen';
     if (styleElement['styleSheet']) {
         styleElement['styleSheet'].cssText = styles;
     } else {
         styleElement.appendChild(document.createTextNode(styles));
     }
+    styleElement.setAttribute('component', selector);
+    document.head.appendChild(styleElement);
 }
 
 // 范围css
