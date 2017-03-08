@@ -13,7 +13,7 @@ user = {{$ctrl.user}} <br>
     test directive <br> hello
 </div>
 
-<button ng-click="showColor.setColor('black')">set color black</button>
-<button ng-click="showColor.setColor('yellow')">set color yellow</button>
+<button ng-click="$ctrl.showColor.setColor('black')">set color black</button>
+<button ng-click="$ctrl.showColor.setColor('yellow')">set color yellow</button>
 
-<app-show-color alias="showColor"></app-show-color>
+<app-show-color alias="$ctrl.showColor"></app-show-color>

@@ -1,6 +1,7 @@
 // Created by baihuibo on 2016/12/16.
 import {Component} from "core";
 import {PageAService} from "./pagea.service";
+import {ShowColorComponent} from "../share/show-color/show-color.component";
 
 @Component({
     templateUrl: './pagea.component.html',
@@ -12,7 +13,13 @@ export class PageAComponent {
 
     static $inject = ['PageAService'];
 
+    showColor: ShowColorComponent;
+
     constructor(pageAService: PageAService) {
         console.log(pageAService);
+    }
+
+    $onInit() {
+        console.log('showColor', this.showColor);
     }
 }

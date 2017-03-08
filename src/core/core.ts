@@ -26,57 +26,33 @@ function globalDigest() {// 触发全局的值检查
     clearTimeout(globalTimer);
     globalTimer = setTimeout(function () {
         element(document)['scope']().$digest();
-    }, 1);
+    }, 0);
 }
 
 export function Component(option: IComponentOptions): any {
     return function (classes) {
-        option.selector = option.selector ? strandToCamel(option.selector.trim()) : 'component' + nextId();
-        option.controller = classes;
-        let {prototype} = classes;
-        let $onInit = prototype.$onInit;
-        let attrScoped = 'scoped-' + Math.random().toString(32).slice(-8);
+        const selector = (option.selector || `app-component${nextId()}`).trim();
+        const {prototype} = classes;
+        const {$onInit} = prototype;
+        const attrScoped = 'scoped-' + Math.random().toString(32).slice(-8);
 
         prototype.$onInit = function () {
             setImmediate(() => {
                 $onInit && $onInit.call(this);
                 $onInit && globalDigest();
             });
-            addStyle(option, attrScoped);
+            addStyle(option, attrScoped, selector);
             if (!$onInit) {// 如果未曾实现过此接口，则在样式初始化后销毁它
                 delete prototype.$onInit;
             }
         };
 
+        option.selector = strandToCamel(selector);// 转换为驼峰
+        option.controller = classes;
         if (option.template) {// html scoped
             option.template = option.template.replace(/<([\w-]+)/g, "<$1 " + attrScoped);
         }
         setMetaData(classes, option, Names.component);
-    }
-}
-
-///// css scoped
-function addStyle(option: IComponentOptions, scoped: string) {
-    if (option['styleInserted']) {
-        return;
-    }
-    option['styleInserted'] = true;
-    let styles = '';
-    option.styleUrls && option.styleUrls.forEach(style => {
-        styles += style[0][1] + '\n';
-    });
-    option.styles && option.styles.forEach(style => styles += style);
-    styles = scopeCss(styles, option.selector, scoped);
-
-    if (styles) {
-        let styleElement = document.createElement("style");
-        styleElement.type = "text/css";
-        document.head.appendChild(styleElement);
-        if (styleElement['styleSheet']) {
-            styleElement['styleSheet'].cssText = styles;
-        } else {
-            styleElement.appendChild(document.createTextNode(styles));
-        }
     }
 }
 
@@ -93,11 +69,10 @@ export function Directive(option: IDirectiveOption) {
             selector = selector.slice(1);
             option.restrict = 'C';
         }
-        selector = strandToCamel(selector);
 
         option.controller = classes;
         setMetaData(classes, {
-            [selector](){
+            [strandToCamel(selector)](){
                 return option
             }
         }, Names.directive);
@@ -264,15 +239,6 @@ function setMetaData(classes, option, names: Names) {
     classes[names] = merge(classes[names] || {}, option);
 }
 
-// 串转驼峰 (aaa-test) => (aaaTest)
-export function strandToCamel(name: string) {
-    return name.replace(/-([a-z])/g, fnCamelCaseReplace);
-}
-
-function fnCamelCaseReplace(all, letter) {
-    return letter.toUpperCase();
-}
-
 let id = 0;
 function nextId() {
     return ++id;
@@ -282,6 +248,41 @@ function filterEmptyItem(i) {
     return !!i;
 }
 
+// 串转驼峰 (aaa-test) => (aaaTest)
+export function strandToCamel(name: string) {
+    return name.replace(/-([a-z])/g, fnCamelCaseReplace);
+}
+
+function fnCamelCaseReplace(all, letter) {
+    return letter.toUpperCase();
+}
+
+///// 添加样式
+function addStyle(option: IComponentOptions, scoped: string, selector: string) {
+    if (option['styleInserted']) {
+        return;
+    }
+    option['styleInserted'] = true;
+    let styles = '';
+    option.styleUrls && option.styleUrls.forEach(style => {
+        styles += style[0][1] + '\n';
+    });
+    option.styles && option.styles.forEach(style => styles += style);
+    styles = scopeCss(styles, selector, scoped);
+
+    if (styles) {
+        let styleElement = document.createElement("style");
+        styleElement.type = "text/css";
+        document.head.appendChild(styleElement);
+        if (styleElement['styleSheet']) {
+            styleElement['styleSheet'].cssText = styles;
+        } else {
+            styleElement.appendChild(document.createTextNode(styles));
+        }
+    }
+}
+
+// 范围css
 export function scopeCss(css, parent, attr) {
     if (!css) return css;
 
@@ -306,10 +307,6 @@ export function scopeCss(css, parent, attr) {
 function replace(css, parent, attr) {
     //strip block comments
     css = css.replace(/\/\*([\s\S]*?)\*\//g, '');
-
-    parent = parent.replace(/([A-Z])/g, function (m, $1: string) {
-        return '-' + $1.toLowerCase();
-    });
 
     return css.replace(/([^\r\n,{}]+)(,(?=[^}]*\{)|\s*\{)/g, function (mat, $1, $2) {
         return `${parent} ${$1.trim()}[${attr}]${$2}`;

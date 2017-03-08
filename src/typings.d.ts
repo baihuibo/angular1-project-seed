@@ -106,7 +106,7 @@ declare module "core" {
         template?: string;
         templateUrl?: string;
         styleUrls?: string[];
-        styles?: string[],
+        styles?: string[];
         bindings?: {[boundProperty: string]: string};
         transclude?: boolean | {[slot: string]: string};
         require?: {[controller: string]: string};
