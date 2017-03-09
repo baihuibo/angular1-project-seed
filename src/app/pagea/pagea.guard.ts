@@ -1,12 +1,13 @@
 // Created by baihuibo on 2017/2/8.
-import {CanActivate} from "router";
+import {CanActivate} from "angular-core-router";
+import {ILogService} from "angular";
 
 export class PageAGuard implements CanActivate {
 
     static $inject = ['$state', '$log'];
 
     constructor(private $state: angular.ui.IStateService,
-                private $log: angular.ILogService) {
+                private $log: ILogService) {
     }
 
     canActivate() {

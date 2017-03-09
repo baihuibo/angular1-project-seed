@@ -13,6 +13,12 @@
 npm install
 ```
 
+测试
+=======
+```bash
+npm test
+```
+
 启动
 =======
 ```bash

@@ -1,6 +1,6 @@
 // Created by baihuibo on 2017/3/2.
 
-import {Component} from "core";
+import {Component} from "angular-core";
 
 @Component({
     template: `

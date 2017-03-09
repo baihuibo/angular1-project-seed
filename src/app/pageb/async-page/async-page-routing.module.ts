@@ -1,7 +1,7 @@
 // Created by baihuibo on 2017/3/3.
-import {NgModule} from "core";
-import {IRouter} from "router";
-import {RouterModule} from "router";
+import {NgModule} from "angular-core";
+import {IRouter} from "angular-core-router";
+import {RouterModule} from "angular-core-router";
 import {AsyncPage2Component} from "./async-page2.component";
 import {AsyncPage3Component} from "./async-page3.component";
 

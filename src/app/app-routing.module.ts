@@ -1,6 +1,6 @@
 // Created by baihuibo on 2016/12/17.
-import {NgModule} from "core";
-import {RouterModule, IRouter} from "router";
+import {NgModule} from "angular-core";
+import {RouterModule, IRouter} from "angular-core-router";
 import {PageAComponent} from "./pagea/pagea.component";
 import {PageAGuard} from "./pagea/pagea.guard";
 import {PageBComponent} from "./pageb/pageb.component";

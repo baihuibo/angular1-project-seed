@@ -1,6 +1,7 @@
 // Created by baihuibo on 2016/12/22.
-import {Component, Input, Output, ViewParent} from "core";
+import {Component, Input, Output, ViewParent} from "angular-core";
 import {AppComponent} from "./app.component";
+import {ILogService} from "angular";
 
 @Component({
     selector: 'app-people',
@@ -14,7 +15,7 @@ import {AppComponent} from "./app.component";
 export class PeopleComponent {
     static $inject = ['$log'];
 
-    constructor(private $log: angular.ILogService) {
+    constructor(private $log: ILogService) {
     }
 
     @Input() people;

@@ -1,7 +1,7 @@
 // Created by baihuibo on 2016/12/15.
 ///<reference path="../node_modules/@types/angular/index.d.ts"/>
 
-declare module "router" {
+declare module "angular-core-router" {
     export module RouterModule {
         export function forRoot(routers: IRouter[]);
 
@@ -56,7 +56,7 @@ declare module "router" {
     }
 }
 
-declare module "core" {
+declare module "angular-core" {
     import IDirectiveCompileFn = angular.IDirectiveCompileFn;
     import Injectable = angular.Injectable;
     import IControllerConstructor = angular.IControllerConstructor;

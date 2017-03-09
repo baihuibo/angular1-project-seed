@@ -1,5 +1,5 @@
 // Created by baihuibo on 2017/3/6.
-import {Component} from "core";
+import {Component} from "angular-core";
 
 @Component({
     selector: 'app-show-color',

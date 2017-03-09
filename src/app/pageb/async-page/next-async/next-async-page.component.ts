@@ -1,7 +1,7 @@
 // Created by baihuibo on 2017/3/6.
 
 
-import {Component} from "core";
+import {Component} from "angular-core";
 import {ShowColorComponent} from "../../../share/show-color/show-color.component";
 @Component({
     selector: 'next-async-page',

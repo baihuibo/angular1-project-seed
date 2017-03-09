@@ -1,6 +1,7 @@
 // Created by baihuibo on 2016/12/20.
 
-import {Injectable} from "core";
+import {Injectable} from "angular-core";
+import {IHttpPromiseCallbackArg, IHttpService, ILogService} from "angular";
 
 @Injectable({
     name: 'PageAService'
@@ -8,12 +9,12 @@ import {Injectable} from "core";
 export class PageAService {
     static $inject = ['$http', '$log'];
 
-    constructor(private http: angular.IHttpService, private $log: angular.ILogService) {
+    constructor(private http: IHttpService, private $log: ILogService) {
     }
 
     addItem(item) {
         return this.http.get('users/list', {params: item})
-            .then((response: angular.IHttpPromiseCallbackArg<any>) => {
+            .then((response: IHttpPromiseCallbackArg<any>) => {
                 return response.data;
             });
     }

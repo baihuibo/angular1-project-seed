@@ -1,6 +1,6 @@
 // Created by baihuibo on 2017/2/8.
 
-import {Pipe, PipeTransform} from "core";
+import {Pipe, PipeTransform} from "angular-core";
 
 @Pipe({
     name: "state"

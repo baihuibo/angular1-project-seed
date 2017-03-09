@@ -1,10 +1,11 @@
 // Created by baihuibo on 2017/2/8.
 import {environment} from "../environments/environment";
+import {IHttpProvider} from "angular";
 
 export class HttpConfig {
     static $inject = ['$httpProvider'];
 
-    constructor($httpProvider: angular.IHttpProvider) {
+    constructor($httpProvider: IHttpProvider) {
         // 缓存处理器
         $httpProvider.interceptors.push('HttpCacheService');
 

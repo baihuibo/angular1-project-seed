@@ -1,6 +1,7 @@
 // Created by baihuibo on 2016/12/15.
-import {Component} from "core";
+import {Component} from "angular-core";
 import {TestService} from "./share/test.service";
+import {ILogService} from "angular";
 
 @Component({
     selector: 'app',
@@ -17,7 +18,7 @@ export class AppComponent {
 
     static $inject = ['$log', 'TestService'];
 
-    constructor(private $log: angular.ILogService, testService: TestService) {
+    constructor(private $log: ILogService, testService: TestService) {
         console.log(testService);
     }
 

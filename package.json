@@ -3,11 +3,12 @@
   "version": "0.0.1",
   "scripts": {
     "start": "webpack --watch",
-    "build": "ENV_WEBPACK=production webpack -p"
+    "build": "ENV_WEBPACK=production webpack -p",
+    "test": "jest"
   },
   "dependencies": {
-    "angular": "^1.6.0",
-    "angular-resource": "^1.6.0",
+    "angular": "^1.6.3",
+    "angular-resource": "^1.6.3",
     "angular-ui-router": "^1.0.0-rc.1",
     "bootstrap": "^3.3.7",
     "core-js": "^2.4.1",
@@ -17,22 +18,49 @@
     "tslib": "^1.2.0"
   },
   "devDependencies": {
-    "@types/angular": "^1.5.21",
+    "@types/angular": "^1.6.7",
+    "@types/angular-mocks": "^1.5.9",
     "@types/angular-ui-router": "^1.1.35",
     "@types/bootstrap": "^3.3.32",
+    "@types/jest": "^19.2.0",
+    "angular-mocks": "^1.6.3",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.26.1",
     "del": "^2.2.2",
     "file-loader": "^0.9.0",
     "html-loader": "^0.4.4",
     "html-webpack-plugin": "^2.28.0",
+    "jest": "^19.0.2",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "string-replace-webpack-plugin": "0.0.5",
     "style-loader": "^0.13.1",
+    "ts-jest": "^19.0.0",
     "ts-loader": "^1.3.3",
     "typescript": "^2.1.4",
     "url-loader": "^0.5.7",
     "webpack": "^2.2.1"
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "globals": {
+      "__TS_CONFIG__": "<rootDir>/jest-tsconfig.json"
+    },
+    "setupFiles": [
+      "<rootDir>/node_modules/angular/angular.js",
+      "<rootDir>/node_modules/angular-mocks/angular-mocks.js"
+    ],
+    "moduleNameMapper": {
+      "angular-core": "<rootDir>/src/core/angular-core.ts",
+      "angular-core-router": "<rootDir>/src/core/angular-core-router.ts"
+    }
   }
 }

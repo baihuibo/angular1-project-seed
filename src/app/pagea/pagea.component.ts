@@ -1,5 +1,5 @@
 // Created by baihuibo on 2016/12/16.
-import {Component} from "core";
+import {Component} from "angular-core";
 import {PageAService} from "./pagea.service";
 import {ShowColorComponent} from "../share/show-color/show-color.component";
 

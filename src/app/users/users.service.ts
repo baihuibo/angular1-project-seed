@@ -1,7 +1,7 @@
 // Created by baihuibo on 2017/2/9.
-import {Injectable} from "core";
+import {Injectable} from "angular-core";
 import {User} from "./user";
-import {copy} from "angular";
+import {copy, IHttpService} from "angular";
 
 @Injectable({
     name: 'UsersService'
@@ -16,7 +16,7 @@ export class UsersService {
         {userName: 'd', id: '4'},
     ];
 
-    constructor(private http: angular.IHttpService) {
+    constructor(private http: IHttpService) {
 
     }
 

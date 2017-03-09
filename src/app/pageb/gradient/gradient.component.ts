@@ -1,5 +1,5 @@
 // Created by baihuibo on 2016/12/16.
-import {Component, InputOnly, Input} from "core";
+import {Component, InputOnly, Input} from "angular-core";
 
 @Component({
     selector: 'app-gradient',

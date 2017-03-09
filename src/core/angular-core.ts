@@ -6,7 +6,7 @@ import {
     IComponentOptions,
     IDirectiveOption,
     PipeTransform
-} from "core";
+} from "angular-core";
 
 export enum Names {
     component = 1,
@@ -101,6 +101,7 @@ export function NgModule(option: IModule) {
     return function (classes) {
         classes[Names.module] = option.name || `ngModule_${classes.name}_${nextId()}`;
         const iModule = module(classes[Names.module], transformImports(option.imports || []));
+        classes['ngModule'] = iModule;
 
         registerProviders(option.providers, 'service', Names.injectable);
         registerProviders(option.configs, 'config');
@@ -227,7 +228,7 @@ export function ViewParent(comp: Function) {
 }
 
 export function asyncModuleRegister(ngModuleClasses: Function) {
-    const appModule = module(window['appModule'][Names.module]);
+    const appModule = window['appModule']['ngModule'];
     appModule[NameMap.registerChild](ngModuleClasses[Names.module]);
 }
 

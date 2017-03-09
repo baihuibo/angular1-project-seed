@@ -43,8 +43,8 @@ module.exports = {
     resolve: {
         extensions: extensions,
         alias: {
-            'core$': path.resolve(__dirname, "src/core/core.ts"),
-            'router$': path.resolve(__dirname, "src/core/router.ts")
+            'angular-core$': path.resolve(__dirname, "src/core/angular-core.ts"),
+            'angular-core-router$': path.resolve(__dirname, "src/core/angular-core-router.ts")
         }
     },
     externals: {
@@ -92,6 +92,9 @@ module.exports = {
     output: {
         filename: PROD_MODE ? '[name].[hash].js' : '[name].bundle.js',
         path: angular.app.outDir
+    },
+    watch: {
+        ignored: /node_modules|\.spec\.(ts|js)/
     }
 };
 

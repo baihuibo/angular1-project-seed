@@ -1,5 +1,5 @@
 // Created by baihuibo on 2016/12/21.
-import {Directive} from "core";
+import {Directive} from "angular-core";
 
 @Directive({
     selector: '[test]'

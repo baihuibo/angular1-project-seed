@@ -1,8 +1,8 @@
 // Created by baihuibo on 2017/3/1.
 
-import {IRouter, CanActivate} from "router";
+import {IRouter, CanActivate} from "angular-core-router";
 import {forEach, noop} from "angular";
-import {asyncModuleRegister, Names, NgModule, IComponentOptions, strandToCamel} from "core";
+import {asyncModuleRegister, Names, NgModule, IComponentOptions, strandToCamel} from "angular-core";
 import "angular-ui-router";
 // import "ng-ui-router-state-events"; // 暂时不启用此插件
 

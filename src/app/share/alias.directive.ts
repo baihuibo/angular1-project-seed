@@ -1,6 +1,7 @@
 // Created by baihuibo on 2017/3/1.
 
-import {Directive, strandToCamel} from "core";
+import {Directive, strandToCamel} from "angular-core";
+import {IParseService} from "angular";
 
 /**
  * 绑定组件实例化对象
@@ -32,7 +33,7 @@ import {Directive, strandToCamel} from "core";
 export class AliasDirective {
     static $inject = ['$element', '$scope', '$attrs', '$parse'];
 
-    constructor($el, $scope, $attrs, $parse) {
+    constructor($el, $scope, $attrs, $parse: IParseService) {
         if ($attrs['alias']) {
             const assign = $parse($attrs['alias']).assign;
             const name = strandToCamel($el[0].localName);

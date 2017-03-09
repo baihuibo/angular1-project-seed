@@ -1,6 +1,6 @@
 // Created by baihuibo on 2017/1/10.
 
-import {Component} from "core";
+import {Component} from "angular-core";
 import {UsersService} from "./users.service";
 import {User} from "./user";
 

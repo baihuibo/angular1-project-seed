@@ -1,5 +1,5 @@
 // Created by baihuibo on 2017/3/2.
-import {NgModule} from "core";
+import {NgModule} from "angular-core";
 import {AsyncPageComponent} from "./async-page.component";
 import {ShareModule} from "../../share/share.module";
 import {AsyncPageRoutingModule} from "./async-page-routing.module";
