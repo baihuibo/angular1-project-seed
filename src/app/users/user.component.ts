@@ -38,8 +38,8 @@ export class UserComponent {
         this.queryUser();
     }
 
-    private queryUser() {
-        this.usersService.queryAllUser().then((users: User[]) => {
+    queryUser() {
+        return this.usersService.queryAllUser().then((users: User[]) => {
             this.userList = users;
         });
     }
