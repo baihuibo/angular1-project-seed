@@ -13,6 +13,8 @@ import {TestService} from "../../share/test.service";
             <li> <a ui-sref="pagec.async-page3">page3</a> </li>
         </ul>
         
+        测试异步加载的管道: {{'qi' | name}}
+        
         <ui-view></ui-view>
     `
 })

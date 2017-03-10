@@ -5,10 +5,12 @@ import {ShareModule} from "../../share/share.module";
 import {AsyncPageRoutingModule} from "./async-page-routing.module";
 import {AsyncPage2Component} from "./async-page2.component";
 import {AsyncPage3Component} from "./async-page3.component";
+import {NamePipe} from "./name.pipe";
 
 @NgModule({
     imports: [ShareModule, AsyncPageRoutingModule],
-    declarations: [AsyncPageComponent, AsyncPage2Component, AsyncPage3Component]
+    declarations: [AsyncPageComponent, AsyncPage2Component,
+        AsyncPage3Component, NamePipe]
 })
 export class AsyncPageModule {
 
