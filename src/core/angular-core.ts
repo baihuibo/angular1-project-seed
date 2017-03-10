@@ -36,7 +36,7 @@ export function Component(option: IComponentOptions): any {
         const style = getStyle(option);
         if (style && option.template) {
             // 如果没有样式的情况下，没有必要做scoped隔离
-            const attrScoped = 'scoped-' + Math.random().toString(32).slice(-8),
+            const attrScoped = 'ngcontent' + nextId(),
                 {prototype} = classes, {$onInit} = prototype;
             prototype.$onInit = function () {
                 if ($onInit) {
