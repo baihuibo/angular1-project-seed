@@ -22,29 +22,21 @@ const copyList = Array.from(angular.app.assets).map(file => {
     return {from: file, to: 'assets'};
 });
 
-let baseScript = [
+const baseScript = [
     path.resolve(__dirname, "node_modules/tslib/tslib.js"),
     path.resolve(__dirname, "node_modules/angular/angular.js")
 ];
 
 if (PROD_MODE) {
-    baseScript = [
-        path.resolve(__dirname, "node_modules/tslib/tslib.js"),
-        path.resolve(__dirname, "node_modules/angular/angular.min.js")
-    ];
     extensions.unshift('.prod.ts');
 }
 
-const scripts = [];
+const watch = PROD_MODE ? void 0 : {
+    ignored: /node_modules|\.(spec|test)\.(ts|js)/
+};
 
-[].concat(angular.app.scripts || [], baseScript).forEach(file => {
-    if (/\.ts$/.test(file)) {
-        scripts.push('script-loader!ts-loader!' + file);
-    } else if (/\.js$/.test(file)) {
-        scripts.push('script-loader!' + file);
-    }
-});
-
+const hash = PROD_MODE ? '[hash]' : 'bundle';
+const scripts = scriptLoader(angular.app.scripts || [], baseScript);
 const styles = angular.app.styles.map(file => path.join(process.cwd(), angular.app.root, file));
 
 /////// 删除输出目录文件
@@ -62,12 +54,10 @@ module.exports = {
         styles: styles
     },
     output: {
-        filename: PROD_MODE ? '[name].[hash].js' : '[name].bundle.js',
+        filename: `[name].${hash}.js`,
         path: angular.app.outDir
     },
-    watch: PROD_MODE ? void 0 : {
-        ignored: /node_modules|\.spec\.(ts|js)/
-    },
+    watch: watch,
     resolve: {
         extensions: extensions,
         alias: {
@@ -201,6 +191,20 @@ module.exports = {
         "setImmediate": false
     }
 };
+
+function scriptLoader() {
+    let uglify = '';
+    if (PROD_MODE) {
+        uglify = '!uglify-loader'
+    }
+    return [].concat(...arguments).map(file => {
+        if (/\.ts$/.test(file)) {
+            return `script-loader${uglify}!ts-loader!${file}`;
+        } else if (/\.js$/.test(file)) {
+            return `script-loader${uglify}!${file}`;
+        }
+    });
+}
 
 function replacement(match, file, moduleName, offset, string) {
     return `loadChildren : (function(){
