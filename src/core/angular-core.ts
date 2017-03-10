@@ -308,6 +308,9 @@ function replace(css, parent, attr) {
     css = css.replace(/\/\*([\s\S]*?)\*\//g, '');
 
     return css.replace(/([^\r\n,{}]+)(,(?=[^}]*\{)|\s*\{)/g, function (mat, $1, $2) {
+        if ($1.trim() === ':host') {
+            return `${parent} ${$2}`;// 如果是host自己，则直接转换为 parent标签
+        }
         return `${parent} ${$1.trim()}[${attr}]${$2}`;
     });
 }
