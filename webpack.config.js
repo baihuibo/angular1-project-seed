@@ -4,6 +4,10 @@ const webpack = require('webpack');
 const del = require('del');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ProgressPlugin = require('webpack/lib/ProgressPlugin');
+const {NoEmitOnErrorsPlugin} = webpack;
+const {CommonsChunkPlugin} = webpack.optimize;
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const fs = require('fs');
 const StringReplaceWebpackPlugin = require('string-replace-webpack-plugin');
 const angular = require('./angular-conf.json');
@@ -11,23 +15,37 @@ const angular = require('./angular-conf.json');
 const PROD_MODE = /prod|production/i.test(process.env['ENV_WEBPACK']);
 const extensions = ['.ts', '.js', '.json', '.html'];
 
-const copyList = [];
-addToCopyList(angular.app.assets, "assets");
+const nodeModules = path.join(process.cwd(), 'node_modules');
+const entryPoints = ["inline", "polyfills", "sw-register", "styles", "scripts", "vendor", "main"];
+
+const copyList = Array.from(angular.app.assets).map(file => {
+    return {from: file, to: 'assets'};
+});
 
 let baseScript = [
-    path.resolve(__dirname, "node_modules/core-js/client/core.js"),
     path.resolve(__dirname, "node_modules/tslib/tslib.js"),
     path.resolve(__dirname, "node_modules/angular/angular.js")
 ];
 
 if (PROD_MODE) {
     baseScript = [
-        path.resolve(__dirname, "node_modules/core-js/client/core.min.js"),
         path.resolve(__dirname, "node_modules/tslib/tslib.js"),
         path.resolve(__dirname, "node_modules/angular/angular.min.js")
     ];
     extensions.unshift('.prod.ts');
 }
+
+const scripts = [];
+
+[].concat(angular.app.scripts || [], baseScript).forEach(file => {
+    if (/\.ts$/.test(file)) {
+        scripts.push('script-loader!ts-loader!' + file);
+    } else if (/\.js$/.test(file)) {
+        scripts.push('script-loader!' + file);
+    }
+});
+
+const styles = angular.app.styles.map(file => path.join(process.cwd(), angular.app.root, file));
 
 /////// 删除输出目录文件
 try {
@@ -38,7 +56,17 @@ try {
 module.exports = {
     context: path.resolve(__dirname, angular.app.root),
     entry: {
-        'app': angular.app.main
+        main: [angular.app.main],
+        polyfills: [angular.app.polyfills],
+        scripts: scripts,
+        styles: styles
+    },
+    output: {
+        filename: PROD_MODE ? '[name].[hash].js' : '[name].bundle.js',
+        path: angular.app.outDir
+    },
+    watch: PROD_MODE ? void 0 : {
+        ignored: /node_modules|\.spec\.(ts|js)/
     },
     resolve: {
         extensions: extensions,
@@ -52,113 +80,127 @@ module.exports = {
         angular: 'window.angular'
     },
     module: {
-        loaders: [
+        rules: [
             {
-                test: /\.ts/,
+                "enforce": "pre",
+                "test": /\.js$/,
+                "loader": "source-map-loader",
+                "exclude": [/\/node_modules\//]
+            },
+            {
+                test: /\.ts$/,
                 loaders: StringReplaceWebpackPlugin.replace("ts-loader", {
                     replacements: [
                         {pattern: /loadChildren\s*\:\s*['"](.*)#(.*)['"]/g, replacement: replacement}, // loadChildren
                         {pattern: /templateUrl\s*\:\s*['"](.*)['"]/g, replacement: replacementTemplate}, // load template
                         {pattern: /styleUrls\s*\:\s*\[['"](.*)['"]\]/g, replacement: replacementStyles},// load styles
                     ]
-                }),
+                }).split('!'),
+            },
+
+            /////// 静态资源文件
+            {test: /\.json$/, loader: "json-loader"},
+            {test: /\.html/, loader: "raw-loader"},
+            {
+                "test": /\.(eot|svg)$/,
+                "loader": "file-loader?name=[name].[hash:20].[ext]"
             },
             {
-                test: /\.js/, loaders: StringReplaceWebpackPlugin.replace({
-                replacements: [
-                    {
-                        pattern: /#\s*sourceMappingURL=(.*\.map)\s*/g,
-                        replacement: function () {
-                            return ' remove sourceMapping '
-                        }
-                    }
-                ]
-            })
+                "test": /\.(jpg|png|gif|otf|ttf|woff|woff2|cur|ani)$/,
+                "loader": "url-loader?name=[name].[hash:20].[ext]&limit=10000"
             },
-            {test: /\.html/, loaders: "html-loader"},
-            {test: /\.css/, loaders: 'css-loader'},
-            {test: /\.less/, loaders: 'css-loader!less-loader'},
-            {test: /\.(svg|woff2|woff|ttf|eot|jpg|png)/, loaders: "url-loader?limit=10240"},
+
+            /////// 组件样式
+            {
+                "exclude": styles,
+                "test": /\.css$/,
+                "loaders": ["css-loader?{\"sourceMap\":false,\"importLoaders\":1}"]
+            },
+            {
+                "exclude": styles,
+                "test": /\.less$/,
+                "loaders": ["css-loader?{\"sourceMap\":false,\"importLoaders\":1}", "less-loader"]
+            },
+
+            /////// 公共样式
+            {
+                "include": styles,
+                "test": /\.css$/,
+                "loaders": ExtractTextPlugin.extract({
+                    "use": ["css-loader?{\"sourceMap\":false,\"importLoaders\":1}"],
+                    "fallback": "style-loader",
+                    "publicPath": ""
+                })
+            },
+            {
+                "include": styles,
+                "test": /\.less$/,
+                "loaders": ExtractTextPlugin.extract({
+                    "use": ["css-loader?{\"sourceMap\":false,\"importLoaders\":1}", "less-loader"],
+                    "fallback": "style-loader",
+                    "publicPath": ""
+                })
+            },
         ]
     },
     plugins: [
-        new CopyWebpackPlugin(copyList),
         new StringReplaceWebpackPlugin(),
-        new HtmlWebpackPlugin({
-            template: angular.app.index // 源文件位置
+        new NoEmitOnErrorsPlugin(),
+        new ProgressPlugin(),
+        new CopyWebpackPlugin(copyList),
+        new CommonsChunkPlugin({
+            "name": "inline",
+            "minChunks": null
         }),
-        new AddAssetsFilesToHtml()
-    ],
-    output: {
-        filename: PROD_MODE ? '[name].[hash].js' : '[name].bundle.js',
-        path: angular.app.outDir
-    },
-    watch: {
-        ignored: /node_modules|\.spec\.(ts|js)/
-    }
-};
-
-function AddAssetsFilesToHtml() {
-}
-
-AddAssetsFilesToHtml.prototype.apply = function (compiler) {
-    // ...
-    compiler.plugin('compilation', function (compilation) {
-        const vendorJs = PROD_MODE ? 'vendors.[hash].js' : 'vendors.js';
-        const vendorCss = PROD_MODE ? 'styles.[hash].css' : 'styles.css';
-        const scripts = [...baseScript, ...angular.app.scripts];
-        const styles = [...angular.app.styles];
-
-        compilation.plugin('html-webpack-plugin-before-html-processing', function (htmlPluginData, callback) {
-            makeVendorFile(scripts, vendorJs, 'js');
-            makeVendorFile(styles, vendorCss, 'css');
-
-            function makeVendorFile(files, name, type) {
-                name = name.replace('[hash]', compilation.hash);
-                const contents = [];
-                let size = 0;
-                files.forEach(file => {
-                    let fileContent = '';
-                    try {
-                        fileContent = fs.readFileSync(file);
-                    } catch (e) {
-                        try {
-                            fileContent = fs.readFileSync(path.resolve(angular.app.root, file));
-                        } catch (e) {
-                            throw 'not found : ' + file;
-                        }
-                    }
-                    size += fileContent.length;
-                    let content = fileContent.toString();
-                    let match = content.match(/#\s*sourceMappingURL=(.*\.map)\s*/);
-                    if (match && match.length) {
-                        content = content.replace(match[0], ' remove sourceMapping ');
-                    }
-                    contents.push(content);
-                });
-                compilation.assets[name] = {
-                    source(){
-                        return contents.join(' \n ');
-                    },
-                    size(){
-                        return size;
-                    }
-                };
-                htmlPluginData.assets[type].unshift(name);
+        new CommonsChunkPlugin({
+            "name": "vendor",
+            "minChunks": (module) => module.resource && module.resource.startsWith(nodeModules),
+            "chunks": ["main"]
+        }),
+        new HtmlWebpackPlugin({
+            template: angular.app.index, // 源文件位置
+            "hash": false,
+            "inject": true,
+            "compile": true,
+            "favicon": false,
+            "minify": false,
+            "cache": true,
+            "showErrors": true,
+            "chunks": "all",
+            "excludeChunks": [],
+            "title": "Webpack App",
+            "xhtml": true,
+            "chunksSortMode": function sort(left, right) {
+                let leftIndex = entryPoints.indexOf(left.names[0]);
+                let rightindex = entryPoints.indexOf(right.names[0]);
+                if (leftIndex > rightindex) {
+                    return 1;
+                }
+                else if (leftIndex < rightindex) {
+                    return -1;
+                }
+                else {
+                    return 0;
+                }
             }
-
-            callback(null, htmlPluginData);
-        });
-    });
-};
-
-function addToCopyList(list, to) {
-    if (Array.isArray(list)) {
-        list.forEach(function (file) {
-            copyList.push({from: file, to: to || libPath});
-        });
+        }),
+        new ExtractTextPlugin({
+            "filename": "[name].bundle.css",
+            "disable": true
+        }),
+    ],
+    "node": {
+        "fs": "empty",
+        "global": true,
+        "crypto": "empty",
+        "tls": "empty",
+        "net": "empty",
+        "process": true,
+        "module": false,
+        "clearImmediate": false,
+        "setImmediate": false
     }
-}
+};
 
 function replacement(match, file, moduleName, offset, string) {
     return `loadChildren : (function(){

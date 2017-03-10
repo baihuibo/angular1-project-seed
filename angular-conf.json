@@ -4,12 +4,13 @@
     "outDir": "./dist",
     "main": "./main.ts",
     "index": "./index.html",
+    "polyfills": "./polyfills.ts",
     "assets": [
       "assets"
     ],
     "styles": [
       "../node_modules/bootstrap/dist/css/bootstrap.min.css",
-      "style.css"
+      "./style.css"
     ],
     "scripts": [
       "../node_modules/jquery/dist/jquery.min.js",
