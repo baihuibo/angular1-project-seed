@@ -1,5 +1,5 @@
 // Created by baihuibo on 16/8/30.
-import {module, forEach, merge, element, injector} from "angular";
+import {module, forEach, merge, element, injector, IAugmentedJQuery} from "angular";
 import {
     IModule,
     InjectableOption,
@@ -21,7 +21,9 @@ const NameMap = {
     registerChild: '_moduleRegister_'
 };
 
-const $doc: angular.IAugmentedJQuery = element(document);
+const nextTick = window.setImmediate || window.setTimeout;
+const $doc: IAugmentedJQuery = <IAugmentedJQuery>element(document);
+
 let globalTimer: number;
 function globalDigest() {// 触发全局的值检查
     clearTimeout(globalTimer);
@@ -38,7 +40,7 @@ export function Component(option: IComponentOptions): any {
                 {prototype} = classes, {$onInit} = prototype;
             prototype.$onInit = function () {
                 if ($onInit) {
-                    setImmediate(() => {
+                    nextTick(() => {
                         $onInit.call(this);
                         globalDigest();
                     });
@@ -264,7 +266,7 @@ export function strandToCamel(name: string) {
 function getStyle(option) {
     let styles = '';
     option.styleUrls && option.styleUrls.forEach(style => {
-        styles += style[0][1] + '\n';
+        styles += style.toString() + '\n';
     });
     option.styles && option.styles.forEach(style => styles += style + '\n');
     return styles.trim();
