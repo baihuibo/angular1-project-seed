@@ -12,7 +12,7 @@ const fs = require('fs');
 const StringReplaceWebpackPlugin = require('string-replace-webpack-plugin');
 const angular = require('./angular-conf.json');
 
-const PROD_MODE = /prod|production/i.test(process.env['ENV_WEBPACK']);
+const PROD_MODE = process.argv.some(v => v == '-p' || v == '-production');
 const extensions = ['.ts', '.js', '.json', '.html'];
 
 const nodeModules = path.join(process.cwd(), 'node_modules');
@@ -31,9 +31,7 @@ if (PROD_MODE) {
     extensions.unshift('.prod.ts');
 }
 
-const watch = PROD_MODE ? void 0 : {
-    ignored: /node_modules|\.(spec|test)\.(ts|js)/
-};
+const watch = PROD_MODE ? false : {ignored: /node_modules|\.(spec|test)\.(ts|js)/};
 
 const hash = PROD_MODE ? '[hash]' : 'bundle';
 const scripts = scriptLoader(angular.app.scripts || [], baseScript);

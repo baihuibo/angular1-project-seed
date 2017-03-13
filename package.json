@@ -2,8 +2,8 @@
   "name": "application-name",
   "version": "0.0.1",
   "scripts": {
-    "start": "webpack --watch",
-    "build": "ENV_WEBPACK=production webpack -p",
+    "start": "webpack -w",
+    "build": "webpack -p --colors",
     "test": "jest"
   },
   "dependencies": {
