@@ -57,10 +57,6 @@
     "globals": {
       "__TS_CONFIG__": "<rootDir>/jest-tsconfig.json"
     },
-    "setupFiles": [
-      "<rootDir>/node_modules/angular/angular.js",
-      "<rootDir>/node_modules/angular-mocks/angular-mocks.js"
-    ],
     "moduleNameMapper": {
       "angular-core": "<rootDir>/src/core/angular-core.ts",
       "angular-core-router": "<rootDir>/src/core/angular-core-router.ts"
