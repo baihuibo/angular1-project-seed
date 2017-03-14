@@ -70,11 +70,6 @@ module.exports = {
     module: {
         rules: [
             {
-                enforce: "pre",
-                test: /\.ts$/,
-                loader: "tslint-loader"
-            },
-            {
                 "enforce": "pre",
                 "test": /\.js$/,
                 "loader": "source-map-loader",
