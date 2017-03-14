@@ -2,7 +2,7 @@
 
 import {ICompileProvider} from "angular";
 export class AppConfig {
-    static $inject = ['$compileProvider'];
+    static $inject: string[] = ['$compileProvider'];
 
     constructor($compileProvider: ICompileProvider) {
         $compileProvider.cssClassDirectivesEnabled(false); // 禁用 css class 名称的指令

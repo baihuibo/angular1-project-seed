@@ -31,7 +31,7 @@ import {IParseService} from "angular";
     selector: '[alias]'
 })
 export class AliasDirective {
-    static $inject = ['$element', '$scope', '$attrs', '$parse'];
+    static $inject: string[] = ['$element', '$scope', '$attrs', '$parse'];
 
     constructor($el, $scope, $attrs, $parse: IParseService) {
         if ($attrs['alias']) {

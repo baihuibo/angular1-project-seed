@@ -10,7 +10,7 @@ import {Component} from "angular-core";
 })
 export class ShowColorComponent {
 
-    private color = 'red';
+    private color: string = 'red';
 
     setColor(color: string) {
         this.color = color;

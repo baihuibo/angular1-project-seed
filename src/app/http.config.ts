@@ -3,7 +3,7 @@ import {environment} from "../environments/environment";
 import {IHttpProvider} from "angular";
 
 export class HttpConfig {
-    static $inject = ['$httpProvider'];
+    static $inject: string[] = ['$httpProvider'];
 
     constructor($httpProvider: IHttpProvider) {
         // 缓存处理器

@@ -7,7 +7,7 @@ import {IHttpPromiseCallbackArg, IHttpService, ILogService} from "angular";
     name: 'PageAService'
 })
 export class PageAService {
-    static $inject = ['$http', '$log'];
+    static $inject: string[] = ['$http', '$log'];
 
     constructor(private http: IHttpService, private $log: ILogService) {
     }

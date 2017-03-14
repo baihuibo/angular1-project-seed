@@ -13,7 +13,7 @@ import {ILogService} from "angular";
     `
 })
 export class PeopleComponent {
-    static $inject = ['$log'];
+    static $inject: string[] = ['$log'];
 
     constructor(private $log: ILogService) {
     }

@@ -19,7 +19,7 @@ import {TestService} from "../../share/test.service";
     `
 })
 export class AsyncPageComponent {
-    static $inject = ['TestService'];
+    static $inject: string[] = ['TestService'];
 
     constructor(testService: TestService) {
         console.log('testService', testService);

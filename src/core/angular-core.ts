@@ -1,12 +1,6 @@
 // Created by baihuibo on 16/8/30.
-import {module, forEach, merge, element, injector, IAugmentedJQuery} from "angular";
-import {
-    IModule,
-    InjectableOption,
-    IComponentOptions,
-    IDirectiveOption,
-    PipeTransform
-} from "angular-core";
+import {element, IAugmentedJQuery, merge, module} from "angular";
+import {IComponentOptions, IDirectiveOption, IModule, InjectableOption, PipeTransform} from "angular-core";
 
 export enum Names {
     component = 1,
@@ -59,7 +53,7 @@ export function Component(option: IComponentOptions): any {
         option.selector = strandToCamel(selector);// 转换为驼峰
         option.controller = classes;
         setMetaData(classes, option, Names.component);
-    }
+    };
 }
 
 export function Directive(option: IDirectiveOption) {
@@ -68,21 +62,21 @@ export function Directive(option: IDirectiveOption) {
 
         const first = selector[0];
 
-        if (first == '[' && selector.slice(-1) == ']') {// attr
+        if (first === '[' && selector.slice(-1) === ']') {// attr
             selector = selector.slice(1, -1);
             option.restrict = 'A';
-        } else if (first == '.') {// class
+        } else if (first === '.') {// class
             selector = selector.slice(1);
             option.restrict = 'C';
         }
 
         option.controller = classes;
         setMetaData(classes, {
-            [strandToCamel(selector)](){
-                return option
+            [strandToCamel(selector)]() {
+                return option;
             }
         }, Names.directive);
-    }
+    };
 }
 
 export function Injectable(option: InjectableOption) {
@@ -90,13 +84,13 @@ export function Injectable(option: InjectableOption) {
         setMetaData(classes, {
             [option.name]: classes
         }, Names.injectable);
-    }
+    };
 }
 
 export function Pipe(option: InjectableOption) {
     return function (classes) {
         classes[Names.pipe] = option;
-    }
+    };
 }
 
 export function NgModule(option: IModule) {
@@ -161,7 +155,7 @@ export function NgModule(option: IModule) {
                     }
                 } else {
                     // service , directive, filter
-                    for (let [key, value] of Object.entries(first)) {
+                    for (let [key] of Object.entries(first)) {
                         // 重复的组件不在注入父模块
                         if ($injector.has(key + suffix)) {
                             delete first[key];
@@ -183,7 +177,7 @@ export function NgModule(option: IModule) {
                         const instance: PipeTransform = $injector.instantiate(item);
                         return function (value, ...args) {
                             return instance.transform(value, ...args);
-                        }
+                        };
                     }]);
                 } else {
                     component && iModule.component(component.selector, component);
@@ -204,7 +198,7 @@ export function NgModule(option: IModule) {
         function registerProviders(items: any[], method: string, names?: Names) {
             items && items.filter(filterEmptyItem).forEach(item => iModule[method](names ? item[names] : item));
         }
-    }
+    };
 }
 
 export function Input(name?: string, optional?: boolean) {
@@ -226,7 +220,7 @@ export function ViewParent(comp: Function) {
         setMetaData(target.constructor, {
             require: {[key]: '?^' + compOption.selector}
         }, Names.component);
-    }
+    };
 }
 
 export function asyncModuleRegister(ngModuleClasses: Function) {
@@ -239,10 +233,10 @@ function bindings_proxy(name: string, symbol: string) {
         setMetaData(target.constructor, {
             bindings: {[key]: symbol + (name || key)}
         }, Names.component);
-    }
+    };
 }
 
-function setMetaData(classes, option, names: Names) {
+function setMetaData(classes, option, names) {
     classes[names] = merge(classes[names] || {}, option);
 }
 
@@ -291,22 +285,22 @@ function addStyle(styles: string, scoped: string, selector: string) {
 export function scopeCss(css: string, parent: string, attr: string) {
     css = replace(css, parent, attr);
 
-    //regexp.escape
+    // regexp.escape
     let parentRe = parent.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 
-    //replace self-selectors
-    css = css.replace(new RegExp('(' + parentRe + ')\\s*\\1(?=[\\s\\r\\n,{])', 'g'), '$1');//'$1'
+    // replace self-selectors
+    css = css.replace(new RegExp('(' + parentRe + ')\\s*\\1(?=[\\s\\r\\n,{])', 'g'), '$1');
 
-    //replace `:host` with parent
+    // replace `:host` with parent
     css = css.replace(new RegExp('(' + parentRe + ')\\s*:host', 'g'), '$1');
 
-    //revoke wrongly replaced @ statements, like @supports, @import, @media etc.
+    // revoke wrongly replaced @ statements, like @supports, @import, @media etc.
     css = css.replace(new RegExp('(' + parentRe + ')\\s*@', 'g'), '@');
 
     return css;
 }
 function replace(css, parent, attr) {
-    //strip block comments
+    // strip block comments
     css = css.replace(/\/\*([\s\S]*?)\*\//g, '');
 
     return css.replace(/([^\r\n,{}]+)(,(?=[^}]*\{)|\s*\{)/g, function (mat, $1, $2) {

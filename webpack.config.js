@@ -12,7 +12,7 @@ const fs = require('fs');
 const StringReplaceWebpackPlugin = require('string-replace-webpack-plugin');
 const angular = require('./angular-conf.json');
 
-const PROD_MODE = process.argv.some(v => v == '-p' || v == '-production');
+const PROD_MODE = process.argv.some(v => v === '-p' || v === '-production');
 const extensions = ['.ts', '.js', '.json', '.html'];
 
 const nodeModules = path.join(process.cwd(), 'node_modules');
@@ -69,6 +69,11 @@ module.exports = {
     },
     module: {
         rules: [
+            {
+                enforce: "pre",
+                test: /\.ts$/,
+                loader: "tslint-loader"
+            },
             {
                 "enforce": "pre",
                 "test": /\.js$/,

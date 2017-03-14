@@ -1,20 +1,19 @@
 // Created by baihuibo on 2016/12/16.
-import {Component, InputOnly, Input} from "angular-core";
+import {Component} from "angular-core";
 
 @Component({
     selector: 'app-gradient',
     templateUrl: './gradient.component.html'
 })
 export class GradientBComponent {
+    gradient: any;
+
+    static $inject: string[] = [];
 
     private modelId: string = Date.now().toString();
 
-    gradient: any;
-
-    static $inject = [];
-
     constructor() {
-
+        //
     }
 
     open(gradient) {

@@ -4,7 +4,7 @@ import {ILogService} from "angular";
 
 export class PageAGuard implements CanActivate {
 
-    static $inject = ['$state', '$log'];
+    static $inject: string[] = ['$state', '$log'];
 
     constructor(private $state: angular.ui.IStateService,
                 private $log: ILogService) {

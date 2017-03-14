@@ -29,7 +29,7 @@ export class UserComponent {
 
     userList: User[];
 
-    static $inject = ['UsersService'];
+    static $inject: string[] = ['UsersService'];
 
     constructor(private usersService: UsersService) {
     }

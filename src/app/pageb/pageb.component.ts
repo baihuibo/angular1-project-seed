@@ -6,11 +6,11 @@ import {ILogService} from "angular";
     templateUrl: './pageb.component.html'
 })
 export class PageBComponent {
-    static $inject = ['$state', '$log'];
+    static $inject: string[] = ['$state', '$log'];
+    gradient: any = {id: 1, name: 'baihuibo'};
 
     constructor($state: angular.ui.IStateService, $log: ILogService) {
 
     }
 
-    gradient: any = {id: 1, name: 'baihuibo'};
 }

@@ -6,6 +6,6 @@ import {Injectable} from "angular-core";
 })
 export class TestService {
     testFn() {
-
+        return;
     }
 }

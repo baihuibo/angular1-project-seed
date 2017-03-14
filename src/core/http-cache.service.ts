@@ -7,7 +7,7 @@ import {ILogService, IRequestConfig} from "angular";
     name: 'HttpCacheService'
 })
 export class HttpCacheService {
-    static $inject = ['$log'];
+    static $inject: string[] = ['$log'];
 
     constructor(private $log: ILogService) {
         $log.debug('不缓存任何请求');

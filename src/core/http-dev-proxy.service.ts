@@ -7,7 +7,7 @@ import {ILogService, IRequestConfig} from "angular";
     name: 'HttpDevProxyService'
 })
 export class HttpDevProxyService {
-    static $inject = ['$log'];
+    static $inject: string[] = ['$log'];
 
     constructor(private $log: ILogService) {
         $log.debug('非开发环境，使用本地http代理模式');

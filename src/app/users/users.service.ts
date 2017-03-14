@@ -7,7 +7,7 @@ import {copy, IHttpService} from "angular";
     name: 'UsersService'
 })
 export class UsersService {
-    static $inject = ['$http'];
+    static $inject: string[] = ['$http'];
 
     private userList: User[] = [
         {userName: 'a', id: '1'},
@@ -25,7 +25,7 @@ export class UsersService {
     }
 
     deleteUser(userId: string) {
-        const index = this.userList.findIndex(user => user.id == userId);
+        const index = this.userList.findIndex(user => user.id === userId);
         this.userList.splice(index, 1);
     }
 }

@@ -5,9 +5,9 @@ import {Directive} from "angular-core";
     selector: '[test]'
 })
 export class TestDirective {
-    static $inject = ['$element'];
+    static $inject: string[] = ['$element'];
 
-    constructor($element:JQuery) {
+    constructor($element: JQuery) {
         $element.css('color', 'red');
     }
 }

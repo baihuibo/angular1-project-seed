@@ -11,7 +11,7 @@ import {ShowColorComponent} from "../share/show-color/show-color.component";
 export class PageAComponent {
     user: any;
 
-    static $inject = ['PageAService'];
+    static $inject: string[] = ['PageAService'];
 
     showColor: ShowColorComponent;
 

@@ -1,15 +1,15 @@
 // Created by baihuibo on 2017/3/1.
 
-import {IRouter, CanActivate} from "angular-core-router";
+import {CanActivate, IRouter} from "angular-core-router";
 import {forEach, noop} from "angular";
-import {asyncModuleRegister, Names, NgModule, IComponentOptions, strandToCamel} from "angular-core";
+import {asyncModuleRegister, IComponentOptions, Names, NgModule, strandToCamel} from "angular-core";
 import "angular-ui-router";
 // import "ng-ui-router-state-events"; // 暂时不启用此插件
 
 export module RouterModule {
     export function forRoot(routers: IRouter[]) {
         return getModule(class RouterConfig {
-            static $inject = ['$stateProvider', '$urlRouterProvider', '$templateFactoryProvider'];
+            static $inject: string[] = ['$stateProvider', '$urlRouterProvider', '$templateFactoryProvider'];
 
             constructor($stateProvider: angular.ui.IStateProvider,
                         $urlRouterProvider: angular.ui.IUrlRouterProvider) {
@@ -55,7 +55,7 @@ export module RouterModule {
 }
 
 function registerRouterProvider(router: IRouter, $urlRouterProvider) {
-    if (router.url == '**' && router.redirectTo) {// 无效的路由
+    if (router.url === '**' && router.redirectTo) {// 无效的路由
         $urlRouterProvider.otherwise(router.redirectTo);
     } else if (router.url === '' && router.redirectTo) {// 默认路由
         $urlRouterProvider.when('', router.redirectTo);
@@ -97,7 +97,7 @@ function transformCompToString(state: IRouter) {
 
 function getModule(config) {
     class ErrorHandlerOverwrite {
-        static $inject = ['$state', '$log'];
+        static $inject: string[] = ['$state', '$log'];
 
         constructor($state: angular.ui.IStateService) {
             $state && $state['defaultErrorHandler'](noop);
